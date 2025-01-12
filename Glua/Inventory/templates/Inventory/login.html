@@ -2,122 +2,23 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Pharmsaveltd</title>
-    <style>
-        /* Base Styles */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f4f4f4;
-        }
-
-        .content-section {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .form-control {
-            font-size: 1rem;
-            padding: 0.75rem 1.25rem;
-            width: 100%;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        /* Adjustments for larger screens */
-        @media screen and (min-width: 769px) {
-            .form-control {
-                max-width: 500px; /* Set the maximum width for inputs */
-                margin: 0 auto; /* Center inputs */
-            }
-
-            button.btn {
-                font-size: 1rem; /* Button font size */
-                padding: 0.5rem 1.5rem; /* Button padding */
-            }
-        }
-
-        /* Adjustments for smaller screens */
-        @media screen and (max-width: 768px) {
-            .content-section {
-                padding: 15px;
-            }
-
-            .form-control {
-                font-size: 0.9rem; /* Slightly smaller text for small screens */
-            }
-        }
-
-        /* Button Styles */
-        button.btn {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button.btn:hover {
-            background-color: #0056b3;
-        }
-
-        hr {
-            border: 1px solid #ccc;
-            width: 100%;
-            margin: 20px 0;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="content-section">
-        <form method="POST">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <fieldset class="form-group">
-                        <legend class="border-bottom py-2">Log In</legend>
-                        {{form|crispy}}
-                    </fieldset>
-                    <hr />
-                    <div class="d-flex">
-                        <button type="submit" class="btn btn-outline-primary mt-2">
-                            Submit
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
+<div class="content-section">
+  <form method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-8 offset-md-3">
+        <fieldset class="form-group">
+          <legend class="border-bottom py-2">Log In</legend>
+          {{form|crispy}}
+        </fieldset>
+        <hr />
+        <div class="d-flex">
+          <button type="submit" class="btn btn-outline-primary mt-2">
+            Submit
+          </button>
+        </div>
+      </div>
     </div>
-</body>
-
-</html>
+  </form>
+</div>
 {% endblock content %}
