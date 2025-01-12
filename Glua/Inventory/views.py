@@ -47,7 +47,7 @@ def home(request):
         request.session.modified = True  # Ensure the session is saved
     else:
         print("Modal already shown in this session")
-    
+
     # Pass these to the template
     context = {
         'drugs': page_obj,  # Pass the paginated drugs
@@ -110,12 +110,12 @@ def sellDrug(request, pk):
         quantity = float(request.POST.get('quantity'))
         client = request.POST.get('client')
         drug = get_object_or_404(Drug, pk=pk)
-        
+
         if drug.stock >= quantity:
             # Update drug stock
             drug.stock -= quantity
             drug.save()
-            
+
             # Create sale record
             Sale.objects.create(
                 seller=request.user,
@@ -125,11 +125,11 @@ def sellDrug(request, pk):
                 quantity=quantity,
                 remaining_quantity=drug.stock
             )
-            
+
             messages.success(request, f'{quantity} {drug.name} sold to {client}')
         else:
             messages.error(request, 'Not enough stock available')
-            
+
         return redirect('home')
 
 @login_required
@@ -138,7 +138,7 @@ def lockDrug(request, pk):
         quantity = float(request.POST.get('quantity'))
         client = request.POST.get('client')
         drug = get_object_or_404(Drug, pk=pk)
-        
+
         if drug.stock >= quantity:
             # Lock product by creating a LockedProduct record
             LockedProduct.objects.create(
@@ -147,7 +147,7 @@ def lockDrug(request, pk):
                 quantity=quantity,
                 client=client
             )
-            
+
             drug.stock -= quantity
             drug.save()
 
@@ -158,14 +158,14 @@ def lockDrug(request, pk):
                 if last_sale.remaining_quantity is None:
                     last_sale.remaining_quantity = 0  # Ensure it's initialized
                 last_sale.remaining_quantity = drug.stock
-                last_sale.save()  
-            
+                last_sale.save()
+
             # Reduce stock
-            
+
             messages.success(request, f'{quantity} {drug.name} locked.')
         else:
             messages.error(request, 'Not enough stock to lock')
-        
+
         return redirect('home')
 
 
@@ -279,7 +279,7 @@ class modifyDrugUpdateView(UpdateView):
 
 def bin_report(request):
     sales = Sale.objects.all().order_by('-date_sold')
-    
+
     # return render(request, 'Inventory/bin.html', {'sales': sales})
     sales = Sale.objects.all().order_by('-date_sold')  # Replace with your queryset
     per_page = int(request.GET.get('per_page', 10))  # Default to 10 items per page
@@ -309,7 +309,7 @@ def dashboard(request):
     if show_modal:
         request.session['modal_shown'] = True  # Set the session variable to True after showing the modal
         request.session.modified = True  # Ensure the session is saved
-    
+
     # Summary Data
     total_products = Drug.objects.count()
     low_stock_products = Drug.objects.filter(stock__lte=F('reorder_level')).count()
@@ -339,7 +339,7 @@ def dashboard(request):
         'expired_drugs': expired_drugs,  # Pass expired drugs to the template
         'expiring_soon': expiring_soon,  # Pass expiring soon drugs to the template
         'low_stock': low_stock,
-        'show_modal': show_modal, 
+        'show_modal': show_modal,
         'locked_products': locked_products,
     }
     return render(request, 'Inventory/dashboard.html', context)
@@ -359,7 +359,7 @@ def low_stock_view(request):
 def get_online_offline_users(request):
     # Get all users
     all_users = User.objects.all()
-    
+
     # Split them into online and offline users
     online_users = [user.username for user in all_users if user.is_active]  # Assuming 'is_active' indicates online status
     offline_users = [user.username for user in all_users if not user.is_active]  # Assuming 'is_active' indicates offline status
@@ -389,14 +389,13 @@ def post_locked_product(request, lock_id):
         quantity = lock.quantity
         client = lock.client  # Assuming 'locked_by' is a User and you need their username as the client.
         drug = lock.drug
-        
+
         # Create sale record
         Sale.objects.create(
             seller=request.user,
             drug_sold=drug,
             client=client,
             batch_no=drug.batch_no,
-            sale_price=drug.selling_price,
             quantity=quantity,
             remaining_quantity=drug.stock
         )
@@ -406,7 +405,7 @@ def post_locked_product(request, lock_id):
 
         # Display a success message
         messages.success(request, f'{quantity} {drug.name} sold to {client} and lock removed.')
-       
+
         # Redirect to the locked products page
         return redirect('locked_products')
 
