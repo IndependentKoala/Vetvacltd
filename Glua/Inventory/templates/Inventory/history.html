@@ -1,0 +1,126 @@
+{% extends 'Inventory/base.html' %}
+{% load humanize %}
+{% block content %}
+<div class="py-2">
+    <a class="display-4 text-dark" style="text-decoration: none;">SALES HISTORY</a>
+    <form action="{% url 'history' %}" method="GET">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <input class="form-control form-control-sm" type="date" name="start_date"
+                value="{{start_date|date:'d/m/Y'}}" placeholder="Search Drug" aria-label="Recipient's "
+                aria-describedby="my-addon">
+            <input class="form-control form-control-sm" type="date" name="end_date" value="{{end_date|date:'d/m/Y'}}"
+                placeholder="Search Drug" aria-label="Recipient's " aria-describedby="my-addon">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-dark btn-sm">Search</button>
+            </div>
+        </div>
+    </form>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <div class="row">
+                            <div class="col">
+                                <th style='border-top:none'>
+                                    Staff On Duty
+                                </th>
+                            </div>
+                            <div class="col">
+                                <th style='border-top:none'>
+                                    Date Sold
+                                </th>
+                            </div>
+                            <div class="col">
+                                <th style='border-top:none'>
+                                    Drug Name
+                                </th>
+                            </div>
+                            <div class="col">
+                                <th style='border-top:none'>
+                                    Customer
+                                </th>
+                            </div>
+                            <div class="col">
+                                <th style='border-top:none'>
+                                    Sold At
+                                </th>
+                            </div>
+                            <div class="col">
+                                <th style='border-top:none'>
+                                    Total
+                                </th>
+                            </div>
+
+                        </div>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div class="row d-flex align-items-center">
+                        {% for sale in sales %}
+                        <tr>
+                            <div class="col">
+                                <td>
+                                    {{sale.seller.username}}
+                                </td>
+                            </div>
+                            <div class="col">
+                                <td>
+                                    {{sale.date_sold}}
+                                </td>
+                            </div>
+                            <div class="col">
+                                <td>
+                                    {{sale.quantity}}
+                                    {{sale.drug_sold}}
+                                </td>
+                            </div>
+                            <div class="col">
+                                <td>
+                                    {{sale.customer}}
+                                </td>
+                            </div>
+                            <div class="col">
+                                <td>
+                                    {{sale.sale_price}}
+                                </td>
+                            </div>
+                            <div class="col">
+                                <td>
+                                    {{sale.total}}
+                                </td>
+                            </div>
+                            {% empty %}
+                            <td>Nothing happened within those days</td>
+
+                        </tr>
+                        {% endfor %}
+                    </div>
+
+                </tbody>
+
+            </table>
+            {% if user.is_superuser %}
+            <h4 class="float-left mr-5"><strong>RUNNING PROFIT Ksh {{profit|intcomma}}</strong></h4>
+            {% endif %}
+
+            <a href="{% url 'today' %}" class="float-left mr-5" style="text-decoration: none;">
+                <h4><strong>TODAY'S SALES </strong></h4>
+            </a>
+            <h4 class="float-right mr-5"><strong>TOTAL SALES Ksh {{total_sales|intcomma}}</strong></h4>
+
+        </div>
+        <div class="card-footer d-flex">
+            {% if user.is_superuser %}
+            <a href="{% url 'create' %}" class="btn sharp btn-dark mr-2">Add New Drug</a>
+
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn sharp btn-dark mr-2">Return to Glua</a>
+
+            <a href="{% url 'stocking' %}" class="btn sharp btn-warning ml-auto">Add Stock</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

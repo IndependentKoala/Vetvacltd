@@ -1,0 +1,36 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Out of Stock Products</h2>
+    
+    {% if out_of_stock %}
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Drug Name</th>
+                    <th>Stock</th>
+                    <th>Reorder Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drug in out_of_stock %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ drug.name }}</td>
+                    <td>{{ drug.stock }}</td>
+                    <td>{{ drug.reorder_level }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-success" role="alert">
+            All items are in stock.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">Back to Home</a>
+</div>
+{% endblock %}

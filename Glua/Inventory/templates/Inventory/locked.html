@@ -1,0 +1,114 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="text-center" style="color: #0047AB;">
+        Locked Products
+    </h1>
+    <form action="{% url 'locked_search' %}" method="POST" class="form-inline">
+        {% csrf_token %}
+        <div class="input-group">
+            <input
+                type="text"
+                name="quiz"
+                class="form-control form-control-sm"
+                placeholder="Search"
+                aria-label="Search"
+                required
+            >
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-dark btn-sm">Search</button>
+            </div>
+        </div>
+    </form>
+    
+    <div class="table-responsive">
+        <table id="locked-products-table" class="table table-bordered table-hover">
+            <thead style="background-color: #001f3f; color: white;">
+                <tr>
+                    <th>Date Locked</th>
+                    <th>Product</th>
+                    <th>Batch No</th>
+                    <th>Locked By</th>
+                    <th>Quantity Locked</th>
+                    <th>Client</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if locked_products %}
+                    {% for lock in locked_products %}
+                    <tr style="background-color: {% cycle '#f0f8ff' '#dfefff' %}; color: #000;">
+                        <td>{{ lock.date_locked }}</td>
+                        <td>{{ lock.drug.name }}</td>
+                        <td>{{ lock.drug.batch_no }}</td>
+                        <td>{{ lock.locked_by.username }}</td>
+                        <td>{{ lock.quantity }}</td>
+                        <td>{{ lock.client }}</td>
+                        <td>
+                            <div class="d-flex">
+                                <form action="{% url 'post_locked_product' lock.id %}" method="POST" class="mr-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Post</button>
+                                </form>
+                                <form action="{% url 'unlock_product' lock.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-secondary btn-sm">Unlock</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center" style="color: #0047AB; font-weight: bold;">
+                            No locked products available.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        
+        <!-- Download Button -->
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{% url 'home' %}" class="btn btn-dark btn-sm">Back to home</a>
+            <button id="download-btn" class="btn btn-primary btn-sm">Download Table</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Download Locked Products Table Data as CSV
+    document.getElementById("download-btn").addEventListener("click", function () {
+        // Get the table element
+        const table = document.getElementById("locked-products-table");
+
+        // Initialize CSV content
+        let csvContent = "";
+
+        // Loop through each row of the table
+        for (let row of table.rows) {
+            const cells = Array.from(row.cells);
+
+            // Skip the header row
+            if (row.rowIndex === 0) continue;
+
+            // Extract text content of each cell, joined by commas
+            const rowContent = cells.map(cell => `"${cell.textContent.trim()}"`).join(",");
+            csvContent += rowContent + "\r\n";
+        }
+
+        // Create a downloadable file
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+
+        // Create an anchor tag and simulate a click to download the file
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "locked_products.csv"; // The name of the file
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+</script>
+{% endblock content %}

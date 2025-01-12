@@ -1,0 +1,22 @@
+body {
+  background: url('../images/colloseum.jpg');
+  background-size: cover;
+  background-repeat: repeat;
+  background-position: 0 -300px;
+  position: relative;
+  overflow: auto;
+  min-height: 1200px;
+}
+
+.white-overlay {
+  position: absolute;
+
+  background: rgba(255, 255, 255, 0.7);
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 1200px;
+}
+.sharp {
+  border-radius: 0%;
+}

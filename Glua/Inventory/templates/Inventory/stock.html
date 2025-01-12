@@ -1,0 +1,127 @@
+{% extends 'Inventory/base.html' %}
+{% block content %}
+<div class="py-2">
+    <h1 class="text-center display-4">ADD STOCK</h1>
+    <form action="{% url 'searchstock' %}" method="post">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <input class="form-control" type="text" name="s" placeholder="Search Drug" aria-label="Recipient's "
+                aria-describedby="my-addon">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </div>
+        </div>
+    </form>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <th style='border-top:none'>
+                                    Drug Name
+                                </th>
+                            </div>
+                            <div class="col-md-2">
+                                <th style='border-top:none'>
+                                    Stock
+                                </th>
+                            </div>
+                            <div class="col-md-2">
+                                <th style='border-top:none'>
+                                    
+                                </th>
+                            </div>
+                            <div class="col-md-2">
+                                <th style='border-top:none'></th>
+                                <!-- <button class="btn btn-danger">Sell</button> -->
+                            </div>
+                        </div>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div class="row">
+                        {% for drug in drugs%}
+                        <tr>
+                            <div class="col-md-6">
+                                <td style="border-bottom:none">
+                                    {{drug.name}}
+                                </td>
+                            </div>
+                            <div class="col-md-2">
+                                <td>
+                                    {{drug.stock}}
+                                </td>
+                            </div>
+                            <div class="col-md-2">
+                                <td>
+                                    {{drug.buying_price}}
+                                </td>
+                            </div>
+                            <div class="col-md-2">
+                                <td>
+                                    <form action="{% url 'addstock' drug.id %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="input-group">
+                                            <input class="form-control" type="text" name="supplier"
+                                                placeholder="Supplier" aria-label="Recipient's "
+                                                aria-describedby="my-addon">
+                                            <input class="form-control" type="number" name="added"
+                                                placeholder="Quantity Received" aria-label="Recipient's "
+                                                aria-describedby="my-addon">
+                                            <div class="input-group-append">
+                                                <button class="input-group-text" type="submit">Add</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </div>
+                        </tr>
+                        <tr>
+                            <td>
+                                {% endfor %}
+                                {% if is_paginated %}
+                                {% if page_obj.has_previous %}
+                                <a href="?page=1" class="btn btn-outline-primary">First</a>
+                                <a href="?page={{page_obj.previous_page_number}}"
+                                    class="btn btn-outline-primary">Previous</a>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                <a href="?page={{num}}" class="btn btn-primary text-white bg-primary">{{ num }}</a>
+
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <a href="?page={{ num }}" class="btn btn-outline-primary">{{ num }}</a>
+                                {% endif %}
+
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                <a href="?page={{page_obj.next_page_number}}" class="btn btn-outline-primary">Next</a>
+                                <a href="?page={{page_obj.paginator.num_pages}}"
+                                    class="btn btn-outline-primary">Last</a>
+                                {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </div>
+                </tbody>
+            </table>
+            <!-- <ul class="list-group list-group-flush">
+                <li class="list-group-item active">Text</li>
+                <li class="list-group-item disabled" aria-disabled="true">Disabled item</li>
+            </ul> -->
+        </div>
+        <div class="card-footer d-flex">
+            {% if user.is_superuser %}
+            <a href="{% url 'create' %}" class="btn sharp btn-dark mr-2">Add New Drug</a>
+            <a href="{% url 'stocked' %}" class="btn sharp btn-dark mr-2">STOCK HISTORY</a>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn sharp btn-warning ml-auto">Return to Glua</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

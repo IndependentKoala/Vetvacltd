@@ -1,0 +1,27 @@
+{% extends 'Inventory/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+  <form method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-6 offset-3">
+        <fieldset class="form-group">
+          <legend class="border-bottom py-2">Log In</legend>
+          {{form|crispy}}
+        </fieldset>
+        <hr />
+        <div class="d-flex">
+          <button type="submit" class="btn btn-outline-primary mt-2">
+            Submit
+          </button>
+          <a href="{% url 'home' %}" type="submit" class="btn btn-outline-primary mt-2 ml-auto">
+            Glua
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+{% endblock content%}

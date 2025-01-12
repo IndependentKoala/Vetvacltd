@@ -1,0 +1,36 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Products Expiring Within 10 Days</h2>
+    
+    {% if expiring_soon %}
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Drug Name</th>
+                    <th>Expiry Date</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drug in expiring_soon %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ drug.name }}</td>
+                    <td>{{ drug.expiry_date }}</td>
+                    <td>{{ drug.stock }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-success" role="alert">
+            No products are expiring within 10 days.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">Back to Home</a>
+</div>
+{% endblock %}
