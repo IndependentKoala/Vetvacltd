@@ -301,8 +301,10 @@ def dashboard(request):
     # Get the products with stock below the reorder level
     low_stock = Drug.objects.filter(stock__lte=F('reorder_level'))
 
-    # Check if the modal has already been shown in this session
-    show_modal = not request.session.get('modal_shown', False)  # Only show modal if 'modal_shown' is not set or False
+    # Check if the modal should be shown (only when there are low stock or expiring soon products)
+    show_modal = False
+    if low_stock.exists() or expiring_soon.exists():
+        show_modal = not request.session.get('modal_shown', False)  # Only show modal if 'modal_shown' is not set or False
 
     if show_modal:
         request.session['modal_shown'] = True  # Set the session variable to True after showing the modal
@@ -341,6 +343,7 @@ def dashboard(request):
         'locked_products': locked_products,
     }
     return render(request, 'Inventory/dashboard.html', context)
+
 
 @login_required
 def low_stock_view(request):
