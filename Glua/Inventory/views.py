@@ -508,3 +508,28 @@ def expiring_soon(request):
     today = timezone.now().date()
     expiring_products = Drug.objects.filter(expiry_date__lte=today + timedelta(days=10))
     return render(request, 'Inventory/expiring_soon.html', {'expiring_soon': expiring_products})
+
+blue_shades = [
+    {"hex": "#0047AB", "rgba": "rgba(0, 71, 171, 1)"},
+    {"hex": "#007b83", "rgba": "rgba(0, 123, 131, 1)"},
+    {"hex": "#0275d8", "rgba": "rgba(2, 117, 216, 1)"},
+    {"hex": "#4682b4", "rgba": "rgba(70, 130, 180, 1)"},
+    {"hex": "#5f9ea0", "rgba": "rgba(95, 158, 160, 1)"},
+    {"hex": "#006994", "rgba": "rgba(0, 105, 148, 1)"},
+]
+
+other_colors = [
+    {"hex": "#fbe7e4", "rgba": "rgba(251, 231, 228, 1)"},
+    {"hex": "#e8f8f5", "rgba": "rgba(232, 248, 245, 1)"},
+    {"hex": "#fff5e6", "rgba": "rgba(255, 245, 230, 1)"},
+    {"hex": "#f9e6ff", "rgba": "rgba(249, 230, 255, 1)"},
+    {"hex": "#fff9e6", "rgba": "rgba(255, 249, 230, 1)"},
+    {"hex": "#ffebf0", "rgba": "rgba(255, 235, 240, 1)"},
+]
+
+def show_colors(request):
+    context = {
+        'blue_colors': blue_shades,
+        'other_colors': other_colors
+    }
+    return render(request, 'Inventory/colors.html', context)

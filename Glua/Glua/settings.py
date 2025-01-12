@@ -26,7 +26,7 @@ SECRET_KEY = 'y8ayo4g*s3ak5un6ic#1d*tiiv@b@xbx%#3x35n##r2^q&(mqd'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pharmsaver.pythonanywhere.com']
+ALLOWED_HOSTS = ['pharmsaver.pythonanywhere.com', '*']
 LOGIN_URL = '/login/'
 
 # Application definition

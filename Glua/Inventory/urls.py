@@ -56,6 +56,7 @@ urlpatterns = [
     path('locked-products/unlock/<int:lock_id>/', views.unlock_product, name='unlock_product'),
     path('add_user/', views.add_user, name='add_user'),  # URL for adding a user
     path('user_management/', views.user_management, name='user_management'),  # URL for the user management page
+    path('colors/', views.show_colors, name='show_colors'),
 
 ]
 

@@ -1,0 +1,42 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="text-center" style="color: #0047AB;">Color Categories</h1>
+
+    <!-- Blue Colors Section -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="text-center" style="color: #007b83;">Shades of Blue</h3>
+        </div>
+        {% for color in blue_colors %}
+        <div class="col-md-3 col-sm-4">
+            <div class="card mb-3">
+                <div class="card-body" style="background-color: {{ color.hex }}">
+                    <h5 class="card-title" style="color: white;">{{ color.hex }}</h5>
+                    <p class="card-text" style="color: white;">RGBA: {{ color.rgba }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Other Colors Section -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="text-center" style="color: #d9534f;">Other Colors</h3>
+        </div>
+        {% for color in other_colors %}
+        <div class="col-md-3 col-sm-4">
+            <div class="card mb-3">
+                <div class="card-body" style="background-color: {{ color.hex }}">
+                    <h5 class="card-title" style="color: white;">{{ color.hex }}</h5>
+                    <p class="card-text" style="color: white;">RGBA: {{ color.rgba }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
