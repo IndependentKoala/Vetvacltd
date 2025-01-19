@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.views.generic import ListView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.utils.timezone import now
+from django.utils.timezone import now, localtime, make_aware
 from datetime import datetime, timedelta, time
 from django.db.models import Count
 from django.http import JsonResponse
@@ -15,6 +15,8 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.contrib.auth import logout
 from django.core.paginator import Paginator
+from django.utils.dateparse import parse_date
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -119,7 +121,7 @@ def sellDrug(request, pk):
             # Create sale record
             Sale.objects.create(
                 seller=request.user,
-                drug_sold=drug,
+                drug_sold=drug.name,
                 client=client,
                 batch_no=drug.batch_no,
                 quantity=quantity,
@@ -151,14 +153,14 @@ def lockDrug(request, pk):
             drug.stock -= quantity
             drug.save()
 
-            last_sale = Sale.objects.filter(drug_sold=drug).order_by('-date_sold').first()
+    #         last_sale = Sale.objects.filter(drug_sold=drug).order_by('-date_sold').first()
 
-    # If a sale exists, add the locked quantity to the remaining_quantity
-            if last_sale:
-                if last_sale.remaining_quantity is None:
-                    last_sale.remaining_quantity = 0  # Ensure it's initialized
-                last_sale.remaining_quantity = drug.stock
-                last_sale.save()
+    # # If a sale exists, add the locked quantity to the remaining_quantity
+    #         if last_sale:
+    #             if last_sale.remaining_quantity is None:
+    #                 last_sale.remaining_quantity = 0  # Ensure it's initialized
+    #             last_sale.remaining_quantity = drug.stock
+    #             last_sale.save()
 
             # Reduce stock
 
@@ -182,7 +184,7 @@ def search(request):
 
 
 def binsearch(request):
-    bins = Sale.objects.all().order_by('drug_sold__name')
+    bins = Sale.objects.all().order_by('drug_sold')
     query = request.POST.get('quiz')
 
     print("Search Query:", query)  # Debugging the query received
@@ -190,8 +192,8 @@ def binsearch(request):
     if query:
         bins = Sale.objects.filter(
             Q(client__icontains=query) |
-            Q(drug_sold__name__icontains=query) |
-            Q(drug_sold__batch_no__icontains=query)
+            Q(drug_sold__icontains=query) |
+            Q(batch_no__icontains=query)
         )
 
     context = {'sales': bins}
@@ -278,14 +280,28 @@ class modifyDrugUpdateView(UpdateView):
 
 
 def bin_report(request):
+    # Get all sales ordered by date sold
     sales = Sale.objects.all().order_by('-date_sold')
+    
+    # Get date range filters from the request
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    
+    # Filter sales based on the date range, if provided
+    if start_date and end_date:
+        try:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+            sales = sales.filter(date_sold__range=(start_date, end_date))
+        except ValueError:
+            pass  # Ignore invalid dates
 
-    # return render(request, 'Inventory/bin.html', {'sales': sales})
-    sales = Sale.objects.all().order_by('-date_sold')  # Replace with your queryset
+    # Pagination setup
     per_page = int(request.GET.get('per_page', 10))  # Default to 10 items per page
     paginator = Paginator(sales, per_page)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
+
     return render(request, 'Inventory/bin.html', {'sales': page_obj})
 
 @login_required
@@ -319,7 +335,7 @@ def dashboard(request):
 
     # Top Sold Products
     top_sold_products = (
-        Sale.objects.values("drug_sold__name")
+        Sale.objects.values("drug_sold")
         .annotate(total_quantity=Sum("quantity"))
         .order_by("-total_quantity")[:5]
     )
@@ -393,7 +409,7 @@ def post_locked_product(request, lock_id):
         # Create sale record
         Sale.objects.create(
             seller=request.user,
-            drug_sold=drug,
+            drug_sold=drug.name,
             client=client,
             batch_no=drug.batch_no,
             quantity=quantity,
@@ -425,14 +441,14 @@ def unlock_product(request, lock_id):
         drug.save()  # Save the updated stock to the database
 
     # Fetch the last sale entry for this drug
-    last_sale = Sale.objects.filter(drug_sold=drug).order_by('-date_sold').first()
+    # last_sale = Sale.objects.filter(drug_sold=drug).order_by('-date_sold').first()
 
-    # If a sale exists, add the locked quantity to the remaining_quantity
-    if last_sale:
-        if last_sale.remaining_quantity is None:
-            last_sale.remaining_quantity = 0  # Ensure it's initialized
-        last_sale.remaining_quantity = drug.stock
-        last_sale.save()  # Save the updated remaining quantity
+    # # If a sale exists, add the locked quantity to the remaining_quantity
+    # if last_sale:
+    #     if last_sale.remaining_quantity is None:
+    #         last_sale.remaining_quantity = 0  # Ensure it's initialized
+    #     last_sale.remaining_quantity = drug.stock
+    #     last_sale.save()  # Save the updated remaining quantity
 
     # Delete the locked product after updating the stock and sales
     lock.delete()
@@ -451,27 +467,59 @@ def locked_search(request):
 
     return render(request, 'Inventory/locked.html', {'locked_products': locked_products})
 
+@login_required
 def user_management(request):
     """
     Display the user management page with a form to add new users
-    and a list of online/offline users.
+    and a list of online/offline users, with their login and logout times.
+    Automatically log out users after 1 minute of inactivity.
     """
+    # Get current time (timezone-aware)
+    # current_time = now()
+
+    # # Convert last_activity to timezone-aware datetime
+    # last_activity = request.session.get('last_activity', None)
+    # if last_activity:
+    #     # Convert the last_activity from string to datetime
+    #     last_activity = datetime.strptime(last_activity, '%Y-%m-%d %H:%M:%S')
+    #     # Make it timezone-aware
+    #     last_activity = make_aware(last_activity)
+
+    # # Check if the user has been inactive for more than 1 minute
+    # inactivity_duration = (current_time - last_activity).total_seconds() if last_activity else 0
+
+    # if inactivity_duration > 60:
+    #     # If more than 1 minute has passed, log out the user
+    #     logout(request)  # This will log out the user
+    #     return render(request, 'Inventory/user_management.html', {'message': 'You have been logged out due to inactivity.'})
+
+    # # Update last activity timestamp as a string
+    # request.session['last_activity'] = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
     # Get all users
     users = User.objects.all()
 
-    # Check for online users
+    # Get session information to track online users and their login times
     sessions = Session.objects.filter(expire_date__gte=now())
     online_user_ids = [session.get_decoded().get('_auth_user_id') for session in sessions]
 
-    # Annotate users with their online/offline status
+    # Annotate users with their online/offline status, login time, and logout time
     for user in users:
         user.is_online = str(user.id) in online_user_ids
+        if user.is_online:
+            # If the user is online, show login time
+            user.login_time = localtime(user.last_login).strftime('%Y-%m-%d %H:%M:%S') if user.last_login else None
+            user.logout_time = None  # No logout time for online users
+        else:
+            # If the user is offline, show logout time
+            user.login_time = None  # No login time for offline users
+            user.logout_time = localtime(user.last_login).strftime('%Y-%m-%d %H:%M:%S') if user.last_login else "N/A"
 
     context = {
         'users': users,
     }
-    return render(request, 'Inventory/user_management.html', context)
 
+    return render(request, 'Inventory/user_management.html', context)
 
 def add_user(request):
     if request.method == 'POST':
@@ -535,3 +583,39 @@ def show_colors(request):
         'other_colors': other_colors
     }
     return render(request, 'Inventory/colors.html', context)
+
+def bin_filter(request):
+    """
+    Filters sales data based on the date range provided by the user.
+    """
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date', None)
+        end_date = request.POST.get('end_date', None)
+        
+        # Convert string dates to Python date objects
+        if start_date:
+            start_date = parse_date(start_date)
+        if end_date:
+            end_date = parse_date(end_date)
+
+        # Filter the sales by date range
+        if start_date and end_date:
+            sales = Sale.objects.filter(date_sold__range=[start_date, end_date])
+        elif start_date:
+            sales = Sale.objects.filter(date_sold__gte=start_date)
+        elif end_date:
+            sales = Sale.objects.filter(date_sold__lte=end_date)
+        else:
+            sales = Sale.objects.all()  # Default to all if no dates provided
+
+    else:
+        sales = Sale.objects.all()  # Default to all sales if not a POST request
+
+    return render(request, 'Inventory/bin.html', {'sales': sales})
+
+@csrf_exempt  # Temporarily disable CSRF for this AJAX endpoint
+def logout_due_to_inactivity(request):
+    if request.method == "POST":
+        logout(request)  # Logs the user out
+        return JsonResponse({"message": "User logged out due to inactivity"})
+    return JsonResponse({"message": "Invalid request"}, status=400)

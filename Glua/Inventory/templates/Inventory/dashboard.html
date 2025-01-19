@@ -1,7 +1,7 @@
 {% extends 'Inventory/base.html' %}
 
 {% block content %}
-<div class="container mt-4">
+<div class=" mt-4">
     <h1 class="text-center mb-4">Dashboard</h1>
     <div class="row text-center mb-4">
         <!-- Total Products Card -->
@@ -101,7 +101,7 @@
         <tbody>
             {% for product in top_sold_products %}
             <tr>
-                <td class="product-name">{{ product.drug_sold__name }}</td>
+                <td class="product-name">{{ product.drug_sold }}</td>
                 <td class="quantity-sold">{{ product.total_quantity }}</td>
             </tr>
             {% endfor %}

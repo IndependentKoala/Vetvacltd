@@ -1,11 +1,18 @@
 {% extends 'Inventory/base.html' %}
 
 {% block content %}
-<div class="container py-4">
+<div class=" py-4">
     <!-- Page Title -->
     <div class="text-center mb-4">
         <h1 style="color: #0047AB; font-weight: bold;">User Management</h1>
     </div>
+
+    <!-- Message Section (if any) -->
+    {% if message %}
+    <div class="alert alert-warning" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
 
     <!-- Add New User Section -->
     <div class="card mb-5 shadow" style="border: 1px solid #0047AB; background-color: #f0f8ff;">
@@ -32,7 +39,6 @@
                 
                 <button type="submit" class="btn btn-primary">Add User</button>
             </form>
-            
         </div>
     </div>
 
@@ -48,20 +54,24 @@
                         <th style="color: #0047AB;">Username</th>
                         <th style="color: #0047AB;">Email</th>
                         <th style="color: #0047AB;">Status</th>
+                        <th style="color: #0047AB;">Login Time</th>
+                        <th style="color: #0047AB;">Logout Time</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for user in users %}
-                    <tr>
+                    <tr id="user-{{ user.username }}">
                         <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
-                        <td>
+                        <td id="user-status-{{ user.username }}">
                             {% if user.is_online %}
-                            <span class="badge badge-success" style="background-color: #007bff; color: white;">Online{{ user.status }}</span>
+                            <span class="badge badge-success" style="background-color: #007bff; color: white;">Online</span>
                             {% else %}
                             <span class="badge badge-secondary" style="background-color: #6c757d; color: white;">Offline</span>
                             {% endif %}
                         </td>
+                        <td>{{ user.login_time|default:"N/A" }}</td>
+                        <td>{{ user.logout_time|default:"N/A" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -69,27 +79,78 @@
         </div>
     </div>
 </div>
+
 <script>
+    const inactivityTimeout = 60*1000*29;  // 29 minutes of inactivity
+    let inactivityTimer;
     const socket = new WebSocket('ws://' + window.location.host + '/ws/user_status/');
 
+    // Function to update user status in the WebSocket
+    function updateUserStatus(status) {
+        const data = {
+            status: status,
+            user: "{{ user.username }}"
+        };
+        socket.send(JSON.stringify(data)); // Send status update to the WebSocket server
+    }
+
+    // Function to reset inactivity timer
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            updateUserStatus('offline');  // Set status to 'offline' after 1 minute of inactivity
+        }, inactivityTimeout);
+    }
+
+    // WebSocket event listener to update user status in the UI
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         const status = data.status;
         const username = data.user;
 
         // Find user in the list and update their status
-        const userElement = document.getElementById(username);
+        const userElement = document.getElementById('user-' + username);
         if (userElement) {
-            userElement.innerText = status === 'online' ? 'Online' : 'Offline';
+            const statusElement = userElement.querySelector('td:nth-child(3) span');
+            if (statusElement) {
+                statusElement.innerText = status === 'online' ? 'Online' : 'Offline';
+                statusElement.classList.toggle('badge-success', status === 'online');
+                statusElement.classList.toggle('badge-secondary', status === 'offline');
+            }
         }
     };
 
-    socket.onopen = function(e) {
+    // WebSocket connection is open
+    socket.onopen = function() {
         console.log("WebSocket connection established.");
+        updateUserStatus('online'); // Set user status to 'online' when page loads
     };
 
-    socket.onclose = function(e) {
+    socket.onclose = function() {
         console.log("WebSocket connection closed.");
+    };
+
+    // Event listeners for user activity
+    document.onmousemove = resetInactivityTimer;
+    document.onkeydown = resetInactivityTimer;
+    document.onclick = resetInactivityTimer;
+
+    // Start inactivity timer when page loads
+    window.onload = resetInactivityTimer;
+
+    // Handle page unload (when user closes the tab or browser)
+    window.onbeforeunload = function() {
+        // No longer logging out or sending any requests when the tab/browser is closed
+        console.log('Tab/browser closed, no logout action performed.');
+    };
+
+    // Listen for tab focus/blur events to detect when the tab becomes inactive or active
+    window.addEventListener("focus", function() {
+        resetInactivityTimer(); // Reset timer when the tab is focused
+    });
+
+    window.addEventListener("blur", function() {
+        // Don't reset inactivity timer when the tab is inactive
     };
 </script>
 

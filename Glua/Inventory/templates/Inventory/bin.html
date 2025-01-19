@@ -1,27 +1,61 @@
 {% extends 'Inventory/base.html' %}
 
 {% block content %}
-<div class="container my-4">
+<div class=" my-4">
     <h1 class="text-center" style="color: #0047AB;">
         <a href="{% url 'bin_report' %}" style="color: #0047AB; text-decoration: none;">Bin Report</a>
     </h1>
-    <form action="{% url 'bin_search' %}" method="POST" class="form-inline">
-        {% csrf_token %}
-        <div class="input-group">
-            <input
-                type="text"
-                name="quiz"
-                class="form-control form-control-sm"
-                placeholder="Search"
-                aria-label="Search"
-                required
-            >
-            <div class="input-group-append">
-                <button type="submit" class="btn btn-dark btn-sm">Search</button>
+    
+    <!-- Filters: Search and Date Range -->
+    <div class="form-row mb-3">
+        <!-- Search Form -->
+        <form action="{% url 'bin_search' %}" method="POST" class="form-inline col-md-7">
+            {% csrf_token %}
+            <div class="input-group">
+                <input
+                    type="text"
+                    name="quiz"
+                    class="form-control form-control-sm"
+                    placeholder="Search"
+                    aria-label="Search"
+                >
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-dark btn-sm">Search</button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+        
+        <!-- Date Range Filter Form, Filter Button and Clear Button aligned to the right -->
+        <form action="{% url 'bin_filter' %}" method="POST" class="form-inline col-md-5 ml-auto">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col">
+                    <input
+                        type="date"
+                        name="start_date"
+                        class="form-control form-control-sm"
+                        placeholder="Start Date"
+                    >
+                </div>
+                <div class="col">
+                    <input
+                        type="date"
+                        name="end_date"
+                        class="form-control form-control-sm"
+                        placeholder="End Date"
+                    >
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="clearFiltersAndReload()">Clear</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
+    <!-- Table Section -->
     <div class="table-responsive">
         <table id="bin-report-table" class="table table-bordered table-hover">
             <thead style="background-color: #001f3f; color: white;">
@@ -41,7 +75,7 @@
                     <td>{{ sale.date_sold }}</td>
                     <td>{{ sale.client }}</td>
                     <td>{{ sale.seller.username }}</td>
-                    <td>{{ sale.drug_sold.name }}</td>
+                    <td>{{ sale.drug_sold }}</td>
                     <td>{{ sale.batch_no }}</td>
                     <td>{{ sale.quantity }}</td>
                     <td>{{ sale.remaining_quantity }}</td>
@@ -50,6 +84,7 @@
             </tbody>
         </table>
 
+        <!-- Footer Buttons -->
         <div class="card-footer d-flex justify-content-between align-items-center">
             <a href="{% url 'home' %}" class="btn btn-dark btn-sm">Back to sales page</a>
             
@@ -69,6 +104,7 @@
             <button id="download-btn" class="btn btn-primary btn-sm ml-2">Download Report</button>
         </div>
 
+        <!-- Pagination Section -->
         <div class="pagination mt-3 d-flex justify-content-center">
             {% if sales.has_previous %}
             <a href="?page={{ sales.previous_page_number }}&per_page={{ sales.paginator.per_page }}" class="btn btn-dark btn-sm mr-2">Previous</a>
@@ -88,6 +124,12 @@
 </div>
 
 <script>
+    // Redirect to default page to clear filters
+    function clearFiltersAndReload() {
+        const baseUrl = "{% url 'bin_report' %}"; // Replace 'bin_report' with the default view's URL name
+        window.location.href = baseUrl;
+    }
+
     document.getElementById("download-btn").addEventListener("click", function () {
         // Get the table element
         const table = document.getElementById("bin-report-table");
@@ -127,5 +169,4 @@
         });
     }
 </script>
-
 {% endblock content %}

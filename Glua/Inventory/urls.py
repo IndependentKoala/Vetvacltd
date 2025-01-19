@@ -57,6 +57,7 @@ urlpatterns = [
     path('add_user/', views.add_user, name='add_user'),  # URL for adding a user
     path('user_management/', views.user_management, name='user_management'),  # URL for the user management page
     path('colors/', views.show_colors, name='show_colors'),
-
+    path('bin_filter/', views.bin_filter, name='bin_filter'),
+    path('logout-inactivity/', views.logout_due_to_inactivity, name='logout_due_to_inactivity'),
 ]
 

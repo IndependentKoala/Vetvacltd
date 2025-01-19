@@ -73,10 +73,9 @@ class Drug(models.Model):
 class Sale(models.Model):
     seller = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True, blank=True)
-    drug_sold = models.ForeignKey(Drug, on_delete=models.PROTECT)
+    drug_sold = models.CharField(max_length=200)
     date_sold = models.DateTimeField(auto_now_add=True)
     client = models.CharField(max_length=200, null=True, blank=True)
-    # sale_price = models.FloatField(null=True, blank=True)
     batch_no = models.CharField(max_length=200, null=True, blank=True)
     quantity = models.FloatField(null=True, blank=True)
     remaining_quantity = models.FloatField(null=True, blank=True)

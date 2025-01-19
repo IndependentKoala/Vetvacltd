@@ -149,7 +149,7 @@
         @media screen and (min-width: 769px) {
             /* Ensure content is top-aligned on larger screens */
             .main-content {
-                margin-left: 250px;
+                margin-left: 250;
                 margin-top: 0;
                 align-items: flex-start;
             }
@@ -160,6 +160,58 @@
             }
         }
     </style>
+    <!-- Add this in base.html inside the <head> or before </body> tag -->
+<script>
+    // WebSocket connection for status updates
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/user_status/');
+
+    // WebSocket event listener for receiving status updates
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const status = data.status;
+        const username = data.user;
+
+        // Only update the status if the user is not on the User Management page
+        if (!window.location.pathname.includes('user_management')) {
+            // Check if the user has a corresponding status badge in the application
+            const userStatusElement = document.getElementById('user-status-' + username);
+            if (userStatusElement) {
+                userStatusElement.innerText = status === 'online' ? 'Online' : 'Offline';
+                userStatusElement.classList.toggle('badge-success', status === 'online');
+                userStatusElement.classList.toggle('badge-secondary', status === 'offline');
+            }
+        }
+    };
+
+    // WebSocket connection open event
+    socket.onopen = function() {
+        console.log("WebSocket connection established.");
+    };
+
+    // WebSocket connection close event
+    socket.onclose = function() {
+        console.log("WebSocket connection closed.");
+    };
+
+    // This will be called when the page is loaded to set the status to online
+    window.onload = function() {
+        // You can include additional logic to handle user-specific status updates
+        // If user is already online, set their status immediately
+        const userStatusElement = document.getElementById('user-status-' + "{{ user.username }}");
+        if (userStatusElement) {
+            userStatusElement.innerText = 'Online';
+            userStatusElement.classList.add('badge-success');
+        }
+    };
+
+    // Ensure the WebSocket connection is established on page load
+    window.onload = function() {
+        socket.onopen = function() {
+            console.log("WebSocket connection established for status updates.");
+        };
+    };
+</script>
+
 </head>
 
 <body>
@@ -232,6 +284,72 @@
         {% block content %}
         {% endblock content %}
     </div>
+
+<!-- Logout the user after 30 minutes of inactivity in Django -->
+    <script>
+        let inactivityTimer;
+        const inactivityLimit = 60 * 1000 * 30; // 1 minute of inactivity in milliseconds
+        const sessionKey = 'isUserLoggedIn'; // localStorage key for managing session
+    
+        // Flag to track whether the tab is active or not (to prevent logging out when switching tabs)
+        let isTabActive = true;
+    
+        // Function to reset the inactivity timer
+        function resetInactivityTimer() {
+            if (isTabActive) {
+                clearTimeout(inactivityTimer); // Clear the existing timer
+                inactivityTimer = setTimeout(logOutUser, inactivityLimit); // Set new timer for 1 minute of inactivity
+            }
+        }
+    
+        // Function to log out the user (no AJAX, no session deletion on close)
+        function logOutUser() {
+            if (localStorage.getItem(sessionKey) === 'true') {
+                // No AJAX logout request. Just clear session-related localStorage
+                localStorage.removeItem(sessionKey);  // Clear the session indicator
+                window.location.href = "/logout/";  // Redirect to logout page
+            }
+        }
+    
+        // Set localStorage to indicate the user is logged in
+        window.onload = function() {
+            if (localStorage.getItem(sessionKey) !== 'true') {
+                localStorage.setItem(sessionKey, 'true');  // Mark user as logged in using localStorage
+            }
+            resetInactivityTimer();  // Start the inactivity timer when the page loads
+        };
+    
+        // Event listeners to reset the inactivity timer on user interaction
+        document.onmousemove = resetInactivityTimer;
+        document.onkeydown = resetInactivityTimer;
+        document.onclick = resetInactivityTimer;
+    
+        // Handle page unload (tab/browser close) - no logout action on close anymore
+        window.onbeforeunload = function() {
+            // No longer logging out or sending any requests when the tab/browser is closed
+            console.log('Tab/browser closed, no logout action performed.');
+        };
+    
+        // Listen for tab focus/blur events to detect when the tab becomes inactive or active
+        window.addEventListener("focus", function() {
+            isTabActive = true;  // Tab is active, reset inactivity timer
+            resetInactivityTimer();
+        });
+    
+        window.addEventListener("blur", function() {
+            isTabActive = false;  // Tab is inactive, don't reset the inactivity timer
+        });
+    
+        // No longer need to keep session alive via AJAX requests periodically
+        // Removed the interval for keeping the session alive
+    
+        // Initially start the inactivity timer
+        resetInactivityTimer();
+    </script>
+    
+    
+    
+    
 </body>
 
 </html>
