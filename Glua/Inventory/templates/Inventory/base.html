@@ -21,18 +21,18 @@
             margin: 0;
             font-family: Arial, sans-serif;
         }
-
+    
         .sidebar {
             width: 250px;
             background: #0d1b2a; /* Navy-blue background */
             color: white;
-            display: flex;
+            display: flex; /* Default to visible */
             flex-direction: column;
             padding: 20px;
             height: 100vh;
             position: fixed;
         }
-
+    
         .sidebar a {
             color: white; /* White text */
             text-decoration: none;
@@ -42,16 +42,16 @@
             border-radius: 5px;
             transition: background 0.3s ease;
         }
-
+    
         .sidebar a:hover {
             background: #1b263b; /* Slightly lighter navy-blue */
         }
-
+    
         .sidebar h2 {
             margin-bottom: 20px;
             font-size: 18px;
         }
-
+    
         .main-content {
             margin-left: 250px;
             padding: 20px;
@@ -60,27 +60,27 @@
             flex-direction: column;
             align-items: flex-start; /* Always top-aligned */
         }
-
+    
         .card {
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
+    
         .card i {
             font-size: 24px;
             margin-bottom: 5px;
         }
-
+    
         .logout {
             margin-top: auto;
         }
-
+    
         /* Responsive styles */
         @media screen and (max-width: 768px) {
             .sidebar {
                 display: none; /* Hide sidebar on smaller screens */
             }
-
+    
             .main-content {
                 margin-left: 0;
                 margin-top: 60px; /* Ensure content doesn't hide behind the navbar */
@@ -89,31 +89,31 @@
                 justify-content: flex-start; /* Align top */
                 align-items: center; /* Horizontally center content */
             }
-
+    
             /* Navbar styles for smaller screens */
             .navbar {
                 display: flex;
                 background: #0d1b2a; /* Navy-blue background */
                 border-bottom: 2px solid #1b263b; /* Slightly lighter navy-blue border */
             }
-
+    
             .navbar .navbar-brand,
             .navbar .nav-link {
                 color: white !important; /* White text for menu links */
             }
-
+    
             .navbar .nav-link:hover {
                 background: #1b263b !important; /* Slightly lighter navy-blue on hover */
                 color: white !important;
             }
-
+    
             .navbar-toggler {
                 border: 1px solid white; /* White border */
                 border-radius: 5px;
                 padding: 6px 8px;
                 outline: none;
             }
-
+    
             .navbar-toggler-icon {
                 display: block;
                 position: relative;
@@ -124,7 +124,7 @@
                 content: "";
                 transition: background-color 0.3s ease;
             }
-
+    
             /* Create the three lines for the hamburger icon */
             .navbar-toggler-icon::before,
             .navbar-toggler-icon::after {
@@ -136,30 +136,47 @@
                 left: 0;
                 transition: all 0.3s ease;
             }
-
+    
             .navbar-toggler-icon::before {
                 top: -8px;
             }
-
+    
             .navbar-toggler-icon::after {
                 top: 8px;
             }
         }
-
+    
         @media screen and (min-width: 769px) {
-            /* Ensure content is top-aligned on larger screens */
+            /* Ensure sidebar is visible on larger screens */
+            .sidebar {
+                display: flex !important; /* Explicitly ensure the sidebar is shown */
+            }
+    
             .main-content {
-                margin-left: 250;
+                margin-left: 250px; /* Ensure content respects the sidebar's width */
                 margin-top: 0;
                 align-items: flex-start;
             }
-
+    
             /* Hide navbar on larger screens */
             .navbar {
                 display: none;
             }
         }
+    
+        @media screen and (max-width: 991px) and (min-width: 769px) {
+            /* Additional rule for 769px-991px range to ensure the sidebar is visible */
+            .sidebar {
+                display: flex !important; /* Sidebar must be explicitly visible */
+            }
+    
+            .main-content {
+                margin-left: 250px; /* Respect sidebar's width */
+            }
+        }
     </style>
+    
+    
     <!-- Add this in base.html inside the <head> or before </body> tag -->
 <script>
     // WebSocket connection for status updates

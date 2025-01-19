@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.core.exceptions import PermissionDenied
 
 
 # class Batch(models.Model):
@@ -44,7 +48,7 @@ class Drug(models.Model):
     # buying_price = models.FloatField()
     # minimum_price = models.FloatField(null=True, blank=True)
     # ref_code = models.CharField(unique=True, max_length=200, null=True, blank=True)
-    selling_price = models.FloatField(null=True)
+    # selling_price = models.FloatField(null=True)
     # maximum_price = models.FloatField()
     stock = models.IntegerField()
     dose_pack = models.FloatField(null=False)
@@ -62,11 +66,15 @@ class Drug(models.Model):
         """Unicode representation of Drug."""
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, bypass_lock_check=False, **kwargs):
+        # Ensure that the drug name is capitalized
         for field_name in ['name']:
             val = getattr(self, field_name, False)
             if val:
                 setattr(self, field_name, val.capitalize())
+
+
+        # Call the parent save method
         super(Drug, self).save(*args, **kwargs)
 
 
@@ -132,3 +140,9 @@ class LockedProduct(models.Model):
     quantity = models.FloatField(null=True, blank=True)
     client = models.CharField(max_length=200, null=True, blank=True)
 
+@receiver(pre_save, sender=LockedProduct)
+def prevent_locked_drug_update(sender, instance, **kwargs):
+    if instance.pk:  # if it's an update (not a new record)
+        original = LockedProduct.objects.get(pk=instance.pk)
+        if original.date_locked and instance.drug != original.drug:
+            raise PermissionDenied("Cannot update locked drugs.")

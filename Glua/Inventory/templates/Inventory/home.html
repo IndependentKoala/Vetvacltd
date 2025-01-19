@@ -1,7 +1,7 @@
 {% extends 'Inventory/base.html' %}
 
 {% block content %}
-<div class=" py-4">
+<div class="container py-4">
     <!-- Navigation and Search Bar -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="{% url 'dashboard' %}" class="text-primary font-weight-bold" style="text-decoration: none; font-size: 1.5rem;">Pharmsave Enterprises Ltd</a>
@@ -47,13 +47,13 @@
                         {% for drug in drugs %}
                         <tr>
                             <td>
-                                {% if user.is_superuser %}
+                                <!-- {% if user.is_superuser %}
                                 <a href="{% url 'modify' drug.pk %}" style="text-decoration: none;">
                                     {{ drug.name }}
                                 </a>
                                 {% else %}
+                                {% endif %} -->
                                 {{ drug.name }}
-                                {% endif %}
                             </td>
                             <td>{{ drug.batch_no }}</td>
                             <td>{{ drug.stock }}</td>
