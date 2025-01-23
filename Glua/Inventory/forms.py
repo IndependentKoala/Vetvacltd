@@ -1,5 +1,5 @@
 from django import forms
-from .models import Drug
+from .models import Drug, IssuedItem
 
 class DrugCreation(forms.ModelForm):
     class Meta:

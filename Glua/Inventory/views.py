@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum, F, Q
-from .models import Drug, Sale, Stocked, LockedProduct
+from .models import Drug, Sale, Stocked, LockedProduct, MarketingItem, IssuedItem
 from .forms import DrugCreation
 from django.contrib import messages
 from django.views.generic import ListView, UpdateView
@@ -521,6 +521,7 @@ def user_management(request):
 
     return render(request, 'Inventory/user_management.html', context)
 
+@login_required
 def add_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -550,10 +551,12 @@ def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/login')  # Redirect to login page or home page
 
+@login_required
 def out_of_stock(request):
     out_of_stock_products = Drug.objects.filter(stock=0)
     return render(request, 'Inventory/out_of_stock.html', {'out_of_stock': out_of_stock_products})
 
+@login_required
 def expiring_soon(request):
     today = timezone.now().date()
     expiring_products = Drug.objects.filter(expiry_date__lte=today + timedelta(days=10))
@@ -584,6 +587,7 @@ def show_colors(request):
     }
     return render(request, 'Inventory/colors.html', context)
 
+@login_required
 def bin_filter(request):
     """
     Filters sales data based on the date range provided by the user.
@@ -619,3 +623,189 @@ def logout_due_to_inactivity(request):
         logout(request)  # Logs the user out
         return JsonResponse({"message": "User logged out due to inactivity"})
     return JsonResponse({"message": "Invalid request"}, status=400)
+
+@login_required
+def marketing_items(request):
+    """Display the list of marketing items."""
+    marketing_items = MarketingItem.objects.all()
+    context = {
+        'marketing_items': marketing_items
+    }
+    return render(request, 'Inventory/marketing_items.html', context)
+
+@login_required
+def marketing_search(request):
+    if request.method == 'POST':
+        search_query = request.POST.get('search', '').strip()  # Get the search query from the form
+        marketing_items = MarketingItem.objects.filter(name__icontains=search_query)  # Perform a case-insensitive search
+
+        # Pass the search results and query back to the template
+        return render(request, 'Inventory/marketing_items.html', {
+            'marketing_items': marketing_items,
+            'search_query': search_query,
+        })
+    else:
+        return render(request, 'Inventory/marketing_items.html', {
+            'marketing_items': [],
+            'search_query': '',
+        })
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import MarketingItem, IssuedItem
+
+@login_required
+def issue_item(request):
+    if request.method == "POST":
+        item_id = request.POST.get("item_id")
+        issued_to = request.POST.get("issued_to")
+        quantity_issued = request.POST.get("quantity_issued")
+
+        # Validate and process the input
+        try:
+            quantity_issued = int(quantity_issued)
+            marketing_item = get_object_or_404(MarketingItem, id=item_id)
+
+            if quantity_issued > marketing_item.stock:
+                messages.error(request, f"Cannot issue more than the available stock for {marketing_item.name}.")
+            elif quantity_issued <= 0:
+                messages.error(request, f"Invalid quantity issued for {marketing_item.name}.")
+            else:
+                # Deduct the stock from MarketingItem
+                marketing_item.stock -= quantity_issued
+                marketing_item.save()
+
+                # Create a new IssuedItem entry
+                IssuedItem.objects.create(
+                    item=marketing_item.name,
+                    stock=marketing_item.stock,
+                    issued_to=issued_to,
+                    quantity_issued=quantity_issued,
+                    issued_by=request.user,
+                )
+
+                messages.success(request, f"Issued {quantity_issued} of {marketing_item.name} to {issued_to}.")
+        except ValueError:
+            messages.error(request, "Invalid quantity issued. Please enter a valid number.")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+
+    # Redirect back to the marketing items page
+    return redirect("marketing_items")
+
+def issued_items_report(request):
+    """
+    View to display all issued items with pagination.
+    """
+    # Fetch all issued items ordered by date
+    issued_items = IssuedItem.objects.all()
+    
+    # Pagination (default 10 items per page)
+    paginator = Paginator(issued_items, 10)  # Change '10' to your desired items per page
+    page_number = request.GET.get('page', 1)
+    per_page = request.GET.get('per_page', 10)
+    paginator.per_page = int(per_page)
+
+    try:
+        issued_items_page = paginator.page(page_number)
+    except Exception as e:
+        issued_items_page = paginator.page(1)
+
+    context = {
+        'issued_items': issued_items_page,
+    }
+    return render(request, 'Inventory/issued_items_report.html', context)
+
+def issued_items_search(request):
+    """
+    View to search issued items by query.
+    """
+    if request.method == 'POST':
+        query = request.POST.get('query', '').strip()
+        if query:
+            # Search in item, issued_to, or issued_by fields
+            issued_items = IssuedItem.objects.filter(
+                Q(item__icontains=query) |
+                Q(issued_to__icontains=query) |
+                Q(issued_by__username__icontains=query)
+            ).order_by('-date_issued')
+        else:
+            issued_items = IssuedItem.objects.all()
+
+        # Pagination (default 10 items per page)
+        paginator = Paginator(issued_items, 10)
+        page_number = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)
+        paginator.per_page = int(per_page)
+
+        try:
+            issued_items_page = paginator.page(page_number)
+        except Exception as e:
+            issued_items_page = paginator.page(1)
+
+        context = {
+            'issued_items': issued_items_page,
+            'query': query,  # Pass the query back to the template
+        }
+        return render(request, 'Inventory/issued_items_report.html', context)
+
+    return render(request, 'Inventory/issued_items_report.html', {'issued_items': []})
+
+def issued_items_filter(request):
+    """
+    View to filter issued items by a date range.
+    """
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # If both dates are provided, filter by range
+        if start_date and end_date:
+            try:
+                start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+                end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
+                issued_items = IssuedItem.objects.filter(
+                    date_issued__range=(start_date_obj, end_date_obj)
+                ).order_by('-date_issued')
+            except ValueError:
+                issued_items = IssuedItem.objects.all()
+        else:
+            # If no valid date range is provided, show all items
+            issued_items = IssuedItem.objects.all()
+
+        # Pagination (default 10 items per page)
+        paginator = Paginator(issued_items, 10)
+        page_number = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)
+        paginator.per_page = int(per_page)
+
+        try:
+            issued_items_page = paginator.page(page_number)
+        except Exception as e:
+            issued_items_page = paginator.page(1)
+
+        context = {
+            'issued_items': issued_items_page,
+            'start_date': start_date,
+            'end_date': end_date,
+        }
+        return render(request, 'Inventory/issued_items_report.html', context)
+
+    return render(request, 'Inventory/issued_items_report.html', {'issued_items': []})
+
+def create_marketing_item(request):
+    if request.method == "POST":
+        # Get the data from the form
+        name = request.POST.get("name")
+        stock = request.POST.get("stock")
+        
+        # Create a new marketing item
+        MarketingItem.objects.create(name=name, stock=stock)
+        messages.success(request, f'Marketing item "{name}" has been created successfully.')
+        
+        # Redirect back to the marketing items page
+        return redirect('marketing_items')
+    
+    # Render the creation form
+    return render(request, 'Inventory/create_marketing_item.html')

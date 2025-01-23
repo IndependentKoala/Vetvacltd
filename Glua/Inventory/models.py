@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.core.exceptions import PermissionDenied
+from django.utils.timezone import now
+
 
 
 # class Batch(models.Model):
@@ -135,7 +137,7 @@ class Stocked(models.Model):
 
 class LockedProduct(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.PROTECT)
-    locked_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    locked_by = models.ForeignKey(User, on_delete=models.PROTECT)
     date_locked = models.DateTimeField(auto_now_add=True)
     quantity = models.FloatField(null=True, blank=True)
     client = models.CharField(max_length=200, null=True, blank=True)
@@ -146,3 +148,31 @@ def prevent_locked_drug_update(sender, instance, **kwargs):
         original = LockedProduct.objects.get(pk=instance.pk)
         if original.date_locked and instance.drug != original.drug:
             raise PermissionDenied("Cannot update locked drugs.")
+
+class MarketingItem(models.Model):
+    name = models.CharField(max_length=100)
+    stock = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+class IssuedItem(models.Model):
+    item = models.CharField(max_length=255, verbose_name="Item")
+    stock = models.PositiveIntegerField(verbose_name="Stock/Quantity")
+    issued_to = models.CharField(max_length=255, verbose_name="Issued To")
+    quantity_issued = models.PositiveIntegerField(verbose_name="Quantity Issued")
+    date_issued = models.DateTimeField(default=now, verbose_name="Date Issued")
+    issued_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        verbose_name="Issued By",
+        related_name="issued_items", null=True, blank=True
+    )
+
+    def __str__(self):
+        return f"{self.item} - Issued to {self.issued_to} by {self.issued_by}"
+
+    class Meta:
+        verbose_name = "Issued Item"
+        verbose_name_plural = "Issued Items"
+        ordering = ['-date_issued']  # Order by latest issued items first

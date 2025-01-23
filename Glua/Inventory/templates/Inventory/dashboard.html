@@ -63,6 +63,15 @@
                 </div>
             </div>
         </div>
+            <!-- Marketing Items Card -->
+        <div class="col-md-3">
+            <div class="card bg-light text-dark" onclick="window.location.href='{% url 'marketing_items' %}'" style="cursor: pointer;">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <i class="fa fa-bullhorn fa-3x mb-2"></i>
+                    <h4>Marketing Items</h4>
+                </div>
+            </div>
+        </div>
     </div>
 
     {% if user.is_superuser %}
@@ -108,7 +117,6 @@
         </tbody>
     </table>
 </div>
-<!-- Modal to display Expiring Soon and Low Stock Drugs -->
 <!-- Modal to display Expiring Soon and Low Stock Drugs -->
 {% if show_modal %}
 <div class="modal fade" id="expiringModal" tabindex="-1" role="dialog" aria-labelledby="expiringModalLabel" aria-hidden="true">

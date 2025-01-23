@@ -1,0 +1,126 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="text-center" style="color: #0047AB;">
+        <a href="{% url 'marketing_items' %}" style="color: #0047AB; text-decoration: none;">Marketing Items</a>
+    </h1>
+    
+    <!-- Filters: Search -->
+    <div class="form-row mb-3">
+        <!-- Search Form -->
+        <form action="{% url 'marketing_search' %}" method="POST" class="form-inline col-md-7">
+            {% csrf_token %}
+            <div class="input-group">
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control form-control-sm"
+                    placeholder="Search"
+                    aria-label="Search"
+                >
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-dark btn-sm">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-responsive">
+        <table id="marketing-items-table" class="table table-bordered table-hover">
+            <thead style="background-color: #001f3f; color: white;">
+                <tr>
+                    <th>Item</th>
+                    <th>Stock/Quantity</th>
+                    <th>Issued To</th>
+                    <th>Quantity Issued</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in marketing_items %}
+                <tr style="background-color: {% cycle '#f0f8ff' '#dfefff' %}; color: #000;">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.stock }}</td>
+                    <form action="{% url 'issue_item' %}" method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <input
+                                type="text"
+                                name="issued_to"
+                                class="form-control form-control-sm"
+                                placeholder="Enter Name"
+                                required
+                            >
+                        </td>
+                        <td>
+                            <input
+                                type="number"
+                                name="quantity_issued"
+                                class="form-control form-control-sm"
+                                placeholder="Quantity"
+                                min="1"
+                                max="{{ item.stock }}"
+                                required
+                            >
+                        </td>
+                        <td>
+                            <button
+                                type="submit"
+                                name="item_id"
+                                value="{{ item.id }}"
+                                class="btn btn-primary btn-sm"
+                            >
+                                Issue
+                            </button>
+                        </td>
+                    </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>
+
+    <!-- Footer Buttons Section -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <!-- Buttons on the bottom left -->
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+            <a href="{% url 'issued_items_report' %}" class="btn btn-info btn-sm ml-2">Issued Items Report</a>
+            <a href="{% url 'create_marketing_item' %}" class="btn btn-success btn-sm ml-2">Create Marketing Item</a>
+        </div>
+        
+        <!-- Download Excel Button on the bottom right -->
+        <button id="download-excel-btn" class="btn btn-primary btn-sm">Download Excel</button>
+    </div>
+</div>
+
+<script>
+    // JavaScript function to export table data to Excel
+    document.getElementById("download-excel-btn").addEventListener("click", function () {
+        const table = document.getElementById("marketing-items-table"); // Get the table element
+        const rows = Array.from(table.rows); // Convert table rows to array
+
+        // Create CSV content
+        let csvContent = "";
+        rows.forEach(row => {
+            const cells = Array.from(row.cells); // Convert row cells to array
+            const rowContent = cells.map(cell => `"${cell.textContent.trim()}"`).join(","); // Create CSV row with commas between cells
+            csvContent += rowContent + "\r\n"; // Add new row
+        });
+
+        // Create a downloadable blob with CSV content
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+
+        // Create and simulate a click on an anchor tag to download the file
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "marketing_items.csv"; // File name
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a); // Clean up
+    });
+</script>
+{% endblock content %}

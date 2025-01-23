@@ -1,29 +1,3 @@
-# from django.contrib import admin
-# from django.urls import path
-# from . import views
-# from .views import  stockingListView, modifyDrugUpdateView
-
-# urlpatterns = [
-#     path('', views.home, name='home'),
-#     # path('', DrugListView.as_view(), name='home'),
-#     path('create/', views.createDrug, name='create'),
-#     path('addstock/<int:pk>/', views.addStock, name='addstock'),
-#     path('stocking/', stockingListView.as_view(), name='stocking'),
-#     path('modify/<int:pk>/', modifyDrugUpdateView.as_view(), name='modify'),
-#     path('stocked/', views.StockAdded, name='stocked'),
-#     path('sell/<int:pk>/', views.sellDrug, name='sell'),
-#     path('search/', views.search, name='search'),
-#     path('bin-report/search/', views.binsearch, name='bin_search'),
-#     path('search/stock/', views.searchstock, name='searchstock'),
-#     path('history/', views.salehistory, name='history'),
-#     path('today/', views.todaysales, name='today'),
-#     path('bin-report/', views.bin_report, name='bin_report'),
-#     path('dashboard/', views.dashboard, name='dashboard'),
-#     path('low-stock/', views.low_stock_view, name='low_stock'),
-
-
-# ]
-
 from django.contrib import admin
 from django.urls import path
 from . import views
@@ -59,5 +33,12 @@ urlpatterns = [
     path('colors/', views.show_colors, name='show_colors'),
     path('bin_filter/', views.bin_filter, name='bin_filter'),
     path('logout-inactivity/', views.logout_due_to_inactivity, name='logout_due_to_inactivity'),
+    path('marketing_items/', views.marketing_items, name='marketing_items'),
+    path('marketing-search/', views.marketing_search, name='marketing_search'),  
+    path('issue_item/', views.issue_item, name='issue_item'),
+    path('issued-items/', views.issued_items_report, name='issued_items_report'),
+    path('issued-items/search/', views.issued_items_search, name='issued_items_search'),
+    path('issued-items/filter/', views.issued_items_filter, name='issued_items_filter'),
+    path('marketing-items/create/', views.create_marketing_item, name='create_marketing_item'),
 ]
 

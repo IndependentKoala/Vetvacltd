@@ -1,0 +1,21 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="text-center" style="color: #0047AB;">Create Marketing Item</h1>
+
+    <form action="{% url 'create_marketing_item' %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Item Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter item name" required>
+        </div>
+        <div class="form-group">
+            <label for="stock">Stock/Quantity</label>
+            <input type="number" class="form-control" id="stock" name="stock" placeholder="Enter stock quantity" min="1" required>
+        </div>
+        <button type="submit" class="btn btn-success">Create Item</button>
+        <a href="{% url 'marketing_items' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock content %}
