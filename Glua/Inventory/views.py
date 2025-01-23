@@ -332,6 +332,7 @@ def dashboard(request):
     out_of_stock_products = Drug.objects.filter(stock=0).count()
     zero_stock_products = Drug.objects.filter(stock__lte=5).count()
     locked_products = LockedProduct.objects.all().count()
+    marketing_items = MarketingItem.objects.all().count()
 
     # Top Sold Products
     top_sold_products = (
@@ -357,6 +358,7 @@ def dashboard(request):
         'low_stock': low_stock,
         'show_modal': show_modal,
         'locked_products': locked_products,
+        'marketing_items': marketing_items
     }
     return render(request, 'Inventory/dashboard.html', context)
 
