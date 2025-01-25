@@ -312,7 +312,7 @@ def dashboard(request):
     expired_drugs = Drug.objects.filter(expiry_date__lt=today)
 
     # Get the products expiring within the next 10 days
-    expiring_soon = Drug.objects.filter(expiry_date__lte=today + timedelta(days=10), expiry_date__gt=today)
+    expiring_soon = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180), expiry_date__gt=today)
 
     # Get the products with stock below the reorder level
     low_stock = Drug.objects.filter(stock__lte=F('reorder_level'))
@@ -561,7 +561,7 @@ def out_of_stock(request):
 @login_required
 def expiring_soon(request):
     today = timezone.now().date()
-    expiring_products = Drug.objects.filter(expiry_date__lte=today + timedelta(days=10))
+    expiring_products = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180))
     return render(request, 'Inventory/expiring_soon.html', {'expiring_soon': expiring_products})
 
 blue_shades = [

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Products Expiring Within 10 Days</h2>
+    <h2 class="mb-4">Products Expiring Within 6 Months</h2>
     
     {% if expiring_soon %}
         <table class="table table-bordered table-hover">
@@ -27,7 +27,7 @@
         </table>
     {% else %}
         <div class="alert alert-success" role="alert">
-            No products are expiring within 10 days.
+            No products are expiring within 6 Months.
         </div>
     {% endif %}
 

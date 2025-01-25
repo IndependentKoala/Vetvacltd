@@ -57,7 +57,7 @@
                             </td>
                             <td>{{ drug.batch_no }}</td>
                             <td>{{ drug.stock }}</td>
-                            <td style="white-space: nowrap;">{{ drug.expiry_date }}</td>
+                            <td style="white-space: nowrap;">{{ drug.expiry_date|date:"M Y"  }}</td>
                             <td>{{ drug.dose_pack }}</td>
                             <td>{{ drug.reorder_level }}</td>
                             <td>
