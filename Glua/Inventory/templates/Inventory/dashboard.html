@@ -133,7 +133,7 @@
                 <h6>Expiring Soon:</h6>
                 <ul>
                     {% for drug in expiring_soon %}
-                        <li>{{ drug.name }} - Expiry Date: {{ drug.expiry_date }}</li>
+                        <li>{{ drug.name }} - Expiry Date: {{ drug.expiry_date|date:"M Y" }}</li>
                     {% empty %}
                         <li>No drugs expiring soon.</li>
                     {% endfor %}

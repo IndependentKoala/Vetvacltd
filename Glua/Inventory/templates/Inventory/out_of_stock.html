@@ -10,6 +10,7 @@
                 <tr>
                     <th>#</th>
                     <th>Drug Name</th>
+                    <th>Batch No</th>
                     <th>Stock</th>
                     <th>Reorder Level</th>
                 </tr>
@@ -19,6 +20,7 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ drug.name }}</td>
+                    <td>{{ drug.batch_no }}</td>
                     <td>{{ drug.stock }}</td>
                     <td>{{ drug.reorder_level }}</td>
                 </tr>

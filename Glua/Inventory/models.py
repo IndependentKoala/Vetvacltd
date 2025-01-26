@@ -68,16 +68,16 @@ class Drug(models.Model):
         """Unicode representation of Drug."""
         return self.name
 
-    def save(self, *args, bypass_lock_check=False, **kwargs):
-        # Ensure that the drug name is capitalized
-        for field_name in ['name']:
-            val = getattr(self, field_name, False)
-            if val:
-                setattr(self, field_name, val.capitalize())
+    # def save(self, *args, bypass_lock_check=False, **kwargs):
+    #     # Ensure that the drug name is capitalized
+    #     for field_name in ['name']:
+    #         val = getattr(self, field_name, False)
+    #         if val:
+    #             setattr(self, field_name, val.capitalize())
 
 
-        # Call the parent save method
-        super(Drug, self).save(*args, **kwargs)
+    #     # Call the parent save method
+    #     super(Drug, self).save(*args, **kwargs)
 
 
 class Sale(models.Model):

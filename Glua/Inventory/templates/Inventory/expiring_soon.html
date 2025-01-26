@@ -19,7 +19,7 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ drug.name }}</td>
-                    <td>{{ drug.expiry_date }}</td>
+                    <td>{{ drug.expiry_date|date:"M Y" }}</td>
                     <td>{{ drug.stock }}</td>
                 </tr>
                 {% endfor %}

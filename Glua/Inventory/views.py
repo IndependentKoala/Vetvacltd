@@ -366,7 +366,7 @@ def dashboard(request):
 @login_required
 def low_stock_view(request):
     # Get the products with stock below or equal to the reorder level
-    low_stock = Drug.objects.filter(stock__lte=F('reorder_level'))
+    low_stock = Drug.objects.filter(stock__lte=F('reorder_level'), stock__gt=0)
 
     context = {
         'low_stock': low_stock
