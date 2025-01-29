@@ -54,7 +54,7 @@ class Drug(models.Model):
     # maximum_price = models.FloatField()
     stock = models.IntegerField()
     dose_pack = models.FloatField(null=False)
-    expiry_date = models.DateField(blank=False)
+    expiry_date = models.DateField(blank=True, null=True)
     reorder_level = models.FloatField(null=False)
     measurement_units = models.ForeignKey(
         Measurement, on_delete=models.PROTECT, null=True, blank=True)
