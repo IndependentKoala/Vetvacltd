@@ -28,7 +28,7 @@
         <div class="card-body">
             <!-- Scrollable Table Wrapper for Small Screens -->
             <div class="table-responsive">
-                <table id="drugs-table" class="table table-striped table-sm text-left">
+                <table id="drugs-table" class="table table-striped table-sm text-right">
                     <thead>
                         <tr>
                             <th style="background-color: #fbe7e4; color: #d9534f;">Vaccine</th>
@@ -37,9 +37,9 @@
                             <th style="background-color: #e6f7ff; color: #0275d8;">Expiry Date</th>
                             <th style="background-color: #f9e6ff; color: #6f42c1;">Dose Pack</th>
                             <th style="background-color: #e6ffe6; color: #5cb85c;">Re-order Level</th>
-                            <th style="background-color: #fff9e6; color: #f0ad4e;">Client</th>
-                            <th style="background-color: #ffebf0; color: #d63384;">Quantity Sold</th>
-                            <th style="background-color: #ebf5ff; color: #0d6efd;">Action</th>
+                            <th class="text-center" style="background-color: #fff9e6; color: #f0ad4e;">Client</th>
+                            <th class="text-center" style="background-color: #ffebf0; color: #d63384;">Quantity Sold</th>
+                            <th  style="background-color: #ebf5ff; color: #0d6efd;">Action</th>
                             <th style="background-color: #ebf5ff; color: #0d6efd;"></th>
                         </tr>
                     </thead>
@@ -58,8 +58,8 @@
                             <td>{{ drug.batch_no }}</td>
                             <td>{{ drug.stock }}</td>
                             <td style="white-space: nowrap;">{{ drug.expiry_date|date:"M Y"  }}</td>
-                            <td>{{ drug.dose_pack }}</td>
-                            <td>{{ drug.reorder_level }}</td>
+                            <td>{{ drug.dose_pack|floatformat:0 }}</td>
+                            <td>{{ drug.reorder_level|floatformat:0 }}</td>
                             <td>
                                 <form action="{% url 'sell' drug.id %}" method="POST" id="sell-form-{{ drug.id }}">
                                     {% csrf_token %}
@@ -221,7 +221,7 @@
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
         link.setAttribute("href", URL.createObjectURL(blob));
-        link.setAttribute("download", "drugs_inventory.csv");
+        link.setAttribute("download", "Vaccines_inventory.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

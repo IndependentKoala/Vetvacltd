@@ -253,6 +253,8 @@
                     <a class="nav-item nav-link" href="{% url 'low_stock' %}"><i class="fas fa-exclamation-circle"></i> Low Stock Products</a>
                     <a class="nav-item nav-link" href="{% url 'out_of_stock' %}"><i class="fas fa-box-open"></i> Out of Stock Products</a>
                     <a class="nav-item nav-link" href="{% url 'bin_report' %}"><i class="fas fa-file-alt"></i> Bin Card</a>
+                    <a class="nav-item nav-link" href="{% url 'marketing_items' %}"><i class="fas fa-bullhorn"></i> Marketing Items</a>
+                    <a class="nav-item nav-link" href="{% url 'locked_products' %}"><i class="fas fa-lock"></i> Locked Products</a>
                     {% if user.is_superuser %}
                         <a class="nav-item nav-link" href="{% url 'create' %}"><i class="fas fa-plus-circle"></i> New</a>
                         <a class="nav-item nav-link" href="{% url 'user_management' %}"><i class="fas fa-users"></i> Users</a>
@@ -278,6 +280,8 @@
             <a href="{% url 'low_stock' %}"><i class="fas fa-exclamation-circle"></i> Low Stock Products</a>
             <a href="{% url 'out_of_stock' %}"><i class="fas fa-box-open"></i> Out of Stock Products</a>
             <a href="{% url 'bin_report' %}"><i class="fas fa-file-alt"></i> Bin Card</a>
+            <a href="{% url 'marketing_items' %}"><i class="fas fa-bullhorn"></i> Marketing Items</a>
+            <a href="{% url 'locked_products' %}"><i class="fas fa-lock"></i> Locked Products</a>
             {% if user.is_superuser %}
                 <a href="{% url 'create' %}"><i class="fas fa-plus-circle"></i> New</a>
                 <a href="{% url 'user_management' %}"><i class="fas fa-users"></i> Users</a>
