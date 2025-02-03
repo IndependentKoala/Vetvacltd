@@ -31,7 +31,7 @@
                 <table id="drugs-table" class="table table-striped table-sm text-right">
                     <thead>
                         <tr>
-                            <th style="background-color: #fbe7e4; color: #d9534f;">Vaccine</th>
+                            <th class="text-left" style="background-color: #fbe7e4; color: #d9534f;">Vaccine</th>
                             <th style="background-color: #e8f8f5; color: #007b83;">Batch No</th>
                             <th style="background-color: #fff5e6; color: #f0ad4e;">Stock</th>
                             <th style="background-color: #e6f7ff; color: #0275d8;">Expiry Date</th>
@@ -46,7 +46,7 @@
                     <tbody>
                         {% for drug in drugs %}
                         <tr>
-                            <td>
+                            <td class="text-left">
                                 <!-- {% if user.is_superuser %}
                                 <a href="{% url 'modify' drug.pk %}" style="text-decoration: none;">
                                     {{ drug.name }}
