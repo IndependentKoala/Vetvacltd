@@ -40,5 +40,8 @@ urlpatterns = [
     path('issued-items/search/', views.issued_items_search, name='issued_items_search'),
     path('issued-items/filter/', views.issued_items_filter, name='issued_items_filter'),
     path('marketing-items/create/', views.create_marketing_item, name='create_marketing_item'),
+    path('picking-list/', views.picking_list_view, name='picking_list'),
+    path("add_to_picking_list/<int:drug_id>/", views.add_to_picking_list, name="add_to_picking_list"),
+
 ]
 

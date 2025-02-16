@@ -176,3 +176,15 @@ class IssuedItem(models.Model):
         verbose_name = "Issued Item"
         verbose_name_plural = "Issued Items"
         ordering = ['-date_issued']  # Order by latest issued items first
+
+class PickingList(models.Model):
+    date = models.DateField()
+    client = models.CharField(max_length=255)
+    product = models.CharField(max_length=255)
+    batch_no = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField()
+    in_stock = models.ForeignKey(
+        Drug, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.date} - {self.client} - {self.product}"

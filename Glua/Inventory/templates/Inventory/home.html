@@ -41,6 +41,7 @@
                             <th class="text-center" style="background-color: #ffebf0; color: #d63384;">Quantity Sold</th>
                             <th  style="background-color: #ebf5ff; color: #0d6efd;">Action</th>
                             <th style="background-color: #ebf5ff; color: #0d6efd;"></th>
+                            <th style="background-color: #ebf5ff; color: #0d6efd;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,6 +99,14 @@
                                     <button type="submit" class="btn btn-secondary btn-sm" onclick="setLockDetails({{ drug.id }})">Lock</button>
                                 </form>
                             </td>
+                            <td>
+                                <form action="{% url 'add_to_picking_list' drug.id %}" method="POST" id="picking-list-form-{{ drug.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="client" id="picking-client-{{ drug.id }}">
+                                    <input type="hidden" name="quantity" id="picking-quantity-{{ drug.id }}">
+                                    <button type="submit" class="btn btn-info btn-sm" onclick="setPickingDetails({{ drug.id }})">Picking List</button>
+                                </form>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -113,6 +122,7 @@
                 {% endif %}
                 <a href="{% url 'bin_report' %}" class="btn btn-dark btn-sm mr-2">Bin Report</a>
                 <a href="{% url 'locked_products' %}" class="btn btn-dark btn-sm">Locked Products</a>
+                <a href="{% url 'picking_list' %}" class="btn btn-dark btn-sm">Picking List</a>
             </div>
 
             <!-- Show Dropdown and Pagination positioned here -->
@@ -202,6 +212,16 @@
         var client = document.getElementById('sell-form-' + drugId).elements['client'].value;
         document.getElementById('lock-quantity-' + drugId).value = quantity;
         document.getElementById('lock-client-' + drugId).value = client;
+    }
+    // Function to set picking list details before form submission
+    function setPickingDetails(drugId) {
+        var quantity = document.getElementById('quantity-' + drugId).value;
+        var client = document.getElementById('sell-form-' + drugId).elements['client'].value;
+
+        document.getElementById('picking-quantity-' + drugId).value = quantity;
+        document.getElementById('picking-client-' + drugId).value = client;
+
+        return true; // Ensure form submits
     }
 
     // Download Table Data as CSV

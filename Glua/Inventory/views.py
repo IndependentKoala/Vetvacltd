@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum, F, Q
-from .models import Drug, Sale, Stocked, LockedProduct, MarketingItem, IssuedItem
+from .models import Drug, Sale, Stocked, LockedProduct, MarketingItem, IssuedItem, PickingList
 from .forms import DrugCreation
 from django.contrib import messages
 from django.views.generic import ListView, UpdateView
@@ -185,19 +185,21 @@ def search(request):
 
 def binsearch(request):
     bins = Sale.objects.all().order_by('drug_sold')
-    query = request.POST.get('quiz')
+    
+    # Get search query from GET request or fallback to POST request
+    query = request.GET.get('search') or request.POST.get('quiz')
 
     print("Search Query:", query)  # Debugging the query received
 
     if query:
-        bins = Sale.objects.filter(
+        bins = bins.filter(
             Q(client__icontains=query) |
             Q(drug_sold__icontains=query) |
             Q(batch_no__icontains=query)
         )
 
-    context = {'sales': bins}
-    return render(request, 'Inventory/bin.html', context)
+    return render(request, 'Inventory/bin.html', {'sales': bins})
+
 
 
 def searchstock(request):
@@ -333,6 +335,7 @@ def dashboard(request):
     zero_stock_products = Drug.objects.filter(stock__lte=5).count()
     locked_products = LockedProduct.objects.all().count()
     marketing_items = MarketingItem.objects.all().count()
+    total_picking_list = PickingList.objects.all().count()
 
     # Top Sold Products
     top_sold_products = (
@@ -358,7 +361,8 @@ def dashboard(request):
         'low_stock': low_stock,
         'show_modal': show_modal,
         'locked_products': locked_products,
-        'marketing_items': marketing_items
+        'marketing_items': marketing_items,
+        'total_picking_list': total_picking_list
     }
     return render(request, 'Inventory/dashboard.html', context)
 
@@ -811,3 +815,70 @@ def create_marketing_item(request):
     
     # Render the creation form
     return render(request, 'Inventory/create_marketing_item.html')
+
+def picking_list_view(request):
+    picking_list = PickingList.objects.all().order_by('-date')
+    
+    # Filtering by search query
+    query = request.GET.get('search', '')
+    if query:
+        picking_list = picking_list.filter(
+            Q(client__icontains=query) |  
+            Q(product__icontains=query) |
+            Q(batch_no__icontains=query) |
+            Q(quantity__icontains=query) |
+            Q(date__icontains=query) |  # Convert date to string for searching
+            Q(in_stock__stock__icontains=query)  # Assuming `in_stock` is related to Drug
+        )
+    
+    # Filtering by date range
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date and end_date:
+        picking_list = picking_list.filter(date__range=[start_date, end_date])
+
+    
+    # Pagination
+    per_page = int(request.GET.get('per_page', 10))
+    paginator = Paginator(picking_list, per_page)
+    page_number = request.GET.get('page',1)
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'Inventory/picking_list.html', {'picking_list': page_obj})
+
+def add_to_picking_list(request, drug_id):
+    if request.method == "POST":
+        drug = get_object_or_404(Drug, id=drug_id)
+        client = request.POST.get("client", "").strip()
+        quantity = request.POST.get("quantity", "0").strip()
+
+        # Ensure quantity is a valid integer
+        if not quantity.isdigit():
+            messages.error(request, "Invalid quantity. Please enter a valid number.")
+            return redirect("home")
+
+        quantity = int(quantity)
+
+        if quantity <= 0:
+            messages.error(request, "Quantity must be greater than zero.")
+            return redirect("home")
+
+        # Check if enough stock is available
+        if drug.stock < quantity:
+            messages.error(request, "Not enough stock available.")
+            return redirect("home")
+
+        # Add item to the picking list
+        PickingList.objects.create(
+            date=timezone.now(),
+            client=client,
+            product=drug.name,
+            batch_no=drug.batch_no,
+            quantity=quantity,
+            in_stock=drug
+        )
+
+        messages.success(request, "Item added to the picking list.")
+        return redirect("home")
+
+    return HttpResponse("Invalid request", status=400)
