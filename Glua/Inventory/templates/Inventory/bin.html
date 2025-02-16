@@ -9,12 +9,12 @@
     <!-- Filters: Search and Date Range -->
     <div class="form-row mb-3">
         <!-- Search Form -->
-        <form action="{% url 'bin_search' %}" method="POST" class="form-inline col-md-7">
-            {% csrf_token %}
+        <form action="{% url 'bin_search' %}" method="GET" class="form-inline col-md-7">
+            
             <div class="input-group">
                 <input
                     type="text"
-                    name="quiz"
+                    name="search"
                     class="form-control form-control-sm"
                     placeholder="Search"
                     aria-label="Search"

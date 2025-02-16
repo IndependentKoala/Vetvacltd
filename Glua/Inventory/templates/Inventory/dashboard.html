@@ -122,7 +122,7 @@
             {% for product in top_sold_products %}
             <tr>
                 <td class="product-name">
-                    <a href="{% url 'bin_report' %}?search={{ product.drug_sold }}" style="text-decoration: none; color: inherit;">
+                    <a href="{% url 'bin_search' %}?search={{ product.drug_sold }}" style="text-decoration: none; color: inherit;">
                         {{ product.drug_sold }}
                     </a>
                 </td>
