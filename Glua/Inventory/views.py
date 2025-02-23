@@ -196,8 +196,7 @@ def binsearch(request):
             Q(client__icontains=query) |
             Q(drug_sold__icontains=query) |
             Q(batch_no__icontains=query)
-        )
-
+        ).order_by('-date_sold')
     return render(request, 'Inventory/bin.html', {'sales': bins})
 
 
@@ -294,7 +293,7 @@ def bin_report(request):
         try:
             start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
-            sales = sales.filter(date_sold__range=(start_date, end_date))
+            sales = sales.filter(date_sold__range=(start_date, end_date)).order_by('-date_sold')
         except ValueError:
             pass  # Ignore invalid dates
 
