@@ -206,7 +206,7 @@ def searchstock(request):
     query = request.POST.get('s')
 
     if query:
-        drugs = Drug.objects.filter(Q(name__icontains=query))
+        drugs = Drug.objects.filter(Q(name__icontains=query)).order_by('name')
 
     context = {'drugs': drugs}
     return render(request, 'Inventory/stock.html', context)
@@ -397,7 +397,7 @@ def locked_products(request):
     Display the list of locked products in ascending order by the drug name.
     """
     # Fetch all locked products and order by the drug's name
-    locked_products = LockedProduct.objects.all().order_by('drug__name')
+    locked_products = LockedProduct.objects.all().order_by('-date_locked')
     return render(request, 'Inventory/locked.html', {'locked_products': locked_products})
 
 @login_required
@@ -468,7 +468,7 @@ def locked_search(request):
     query = request.POST.get('quiz', '')  # Retrieve the search query from the form
     locked_products = LockedProduct.objects.filter(
         Q(drug__name__icontains=query) | Q(locked_by__username__icontains=query)
-    )  # Search for drug name or locked_by username containing the query (case-insensitive)
+    ).order_by('-date_locked')  # Search for drug name or locked_by username containing the query (case-insensitive)
 
     return render(request, 'Inventory/locked.html', {'locked_products': locked_products})
 
@@ -609,16 +609,16 @@ def bin_filter(request):
 
         # Filter the sales by date range
         if start_date and end_date:
-            sales = Sale.objects.filter(date_sold__range=[start_date, end_date])
+            sales = Sale.objects.filter(date_sold__range=[start_date, end_date]).order_by('-date_sold')
         elif start_date:
-            sales = Sale.objects.filter(date_sold__gte=start_date)
+            sales = Sale.objects.filter(date_sold__gte=start_date).order_by('-date_sold')
         elif end_date:
-            sales = Sale.objects.filter(date_sold__lte=end_date)
+            sales = Sale.objects.filter(date_sold__lte=end_date).order_by('-date_sold')
         else:
-            sales = Sale.objects.all()  # Default to all if no dates provided
+            sales = Sale.objects.all().order_by('-date_sold')  # Default to all if no dates provided
 
     else:
-        sales = Sale.objects.all()  # Default to all sales if not a POST request
+        sales = Sale.objects.all().order_by('-date_sold')  # Default to all sales if not a POST request
 
     return render(request, 'Inventory/bin.html', {'sales': sales})
 
@@ -654,11 +654,6 @@ def marketing_search(request):
             'marketing_items': [],
             'search_query': '',
         })
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import MarketingItem, IssuedItem
 
 @login_required
 def issue_item(request):
@@ -704,7 +699,7 @@ def issued_items_report(request):
     View to display all issued items with pagination.
     """
     # Fetch all issued items ordered by date
-    issued_items = IssuedItem.objects.all()
+    issued_items = IssuedItem.objects.all().order_by('-date_issued')
     
     # Pagination (default 10 items per page)
     paginator = Paginator(issued_items, 10)  # Change '10' to your desired items per page
@@ -774,10 +769,10 @@ def issued_items_filter(request):
                     date_issued__range=(start_date_obj, end_date_obj)
                 ).order_by('-date_issued')
             except ValueError:
-                issued_items = IssuedItem.objects.all()
+                issued_items = IssuedItem.objects.all().order_by('-date_issued')
         else:
             # If no valid date range is provided, show all items
-            issued_items = IssuedItem.objects.all()
+            issued_items = IssuedItem.objects.all().order_by('-date_issued')
 
         # Pagination (default 10 items per page)
         paginator = Paginator(issued_items, 10)
@@ -828,13 +823,13 @@ def picking_list_view(request):
             Q(quantity__icontains=query) |
             Q(date__icontains=query) |  # Convert date to string for searching
             Q(in_stock__stock__icontains=query)  # Assuming `in_stock` is related to Drug
-        )
+        ).order_by('-date')
     
     # Filtering by date range
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     if start_date and end_date:
-        picking_list = picking_list.filter(date__range=[start_date, end_date])
+        picking_list = picking_list.filter(date__range=[start_date, end_date]).order_by('-date')
 
     
     # Pagination
