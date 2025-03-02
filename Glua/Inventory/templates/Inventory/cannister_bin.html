@@ -1,0 +1,116 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="text-center" style="color: #0047AB;">
+        <a href="{% url 'bin_card' %}" style="color: #0047AB; text-decoration: none;">
+            Cannister Bin Card
+        </a>
+    </h1>    
+    <!-- Filters: Search and Date Range -->
+    <div class="form-row mb-3">
+        <!-- Search Form -->
+        <form action="{% url 'bin_search' %}" method="GET" class="form-inline col-md-7">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-dark btn-sm">Search</button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Date Range Filter -->
+        <form action="{% url 'bin_filter' %}" method="POST" class="form-inline col-md-5 ml-auto">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col"><input type="date" name="start_date" class="form-control form-control-sm"></div>
+                <div class="col"><input type="date" name="end_date" class="form-control form-control-sm"></div>
+                <div class="col"><button type="submit" class="btn btn-primary btn-sm">Filter</button></div>
+                <div class="col"><button type="button" class="btn btn-secondary btn-sm" onclick="clearFiltersAndReload()">Clear</button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-responsive">
+        <table id="bin-card-table" class="table table-bordered table-hover">
+            <thead style="background-color: #001f3f; color: white;">
+                <tr>
+                    <th>Date Issued</th>
+                    <th>Cannister Name</th>
+                    <th>Batch No</th>
+                    <th class="text-center">
+                       Staff on Duty 
+                        <hr style="border: 1px solid white; margin: 2px 0;"> <!-- Horizontal Line -->
+                        <span style="display: flex; justify-content: space-between;">
+                            <span style="border-right: 1px solid white; flex: 1; text-align: center;">Issued By</span>
+                            <span style="flex: 1; text-align: center;">Returned By</span>
+                        </span>
+                    </th>
+                    <th>Client</th>
+                    <th>Quantity</th>
+                    <th>Balance</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in issued_cannisters %}
+                <tr>
+                    <td>{{ record.date_issued|date:"M d, Y h:i A" }}</td>
+                    <td>{{ record.name }}</td>
+                    <td>{{ record.batch_no }}</td>
+                    <td style="display: flex;">
+                        <span style="border-right: 1px solid black; flex: 1; text-align: center;">{{ record.staff_on_duty.username }}</span>
+                        <span style="flex: 1; text-align: center;">{{ record.returned_by.username|default:"-" }}</span>
+                    </td>
+                    <td>{{ record.client }}</td>
+                    <td>{{ record.quantity }}</td>
+                    <td>{{ record.balance }}</td>
+                    <td>
+                        <form action="{% url 'return_cannister' record.id %}" method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn {% if record.action %}btn-secondary{% else %}btn-danger{% endif %} btn-sm" {% if record.action %}disabled{% endif %}>
+                                Return
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        
+        
+        
+    </div>
+    
+    <!-- Footer Buttons -->
+    <div class="d-flex justify-content-between mt-3">
+        <a href="{% url 'cannister_list' %}" class="btn btn-dark btn-sm">Back to Cannister Page</a>
+        <button id="download-btn" class="btn btn-primary btn-sm">Download</button>
+    </div>
+</div>
+
+<script>
+    function clearFiltersAndReload() {
+        window.location.href = "{% url 'bin_card' %}";
+    }
+    
+    document.getElementById("download-btn").addEventListener("click", function () {
+        const table = document.getElementById("bin-card-table");
+        let csvContent = "";
+        for (let row of table.rows) {
+            const cells = Array.from(row.cells);
+            csvContent += cells.map(cell => `"${cell.textContent.trim()}"`).join(",") + "\r\n";
+        }
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "cannister_bin_card.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+</script>
+{% endblock content %}

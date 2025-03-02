@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum, F, Q
-from .models import Drug, Sale, Stocked, LockedProduct, MarketingItem, IssuedItem, PickingList
+from .models import Drug, Sale, Stocked, LockedProduct, MarketingItem, IssuedItem, PickingList, Cannister, IssuedCannister
 from .forms import DrugCreation
 from django.contrib import messages
 from django.views.generic import ListView, UpdateView
@@ -876,3 +876,99 @@ def add_to_picking_list(request, drug_id):
         return redirect("home")
 
     return HttpResponse("Invalid request", status=400)
+
+def cannister_list(request):
+    cannisters = Cannister.objects.all()
+    return render(request, 'Inventory/cannister.html', {'cannisters': cannisters})
+
+@login_required
+def issue_cannister(request, cannister_id):
+    cannister = get_object_or_404(Cannister, id=cannister_id)
+    
+    if request.method == "POST":
+        client = request.POST.get("client")
+        quantity = int(request.POST.get("quantity"))
+
+        if quantity > 0 and quantity <= cannister.stock:
+            # Deduct stock
+            cannister.stock -= quantity
+            cannister.save()
+
+            # Save issuance record
+            IssuedCannister.objects.create(
+                name=cannister.name,
+                batch_no=cannister.batch_no,
+                staff_on_duty=request.user,
+                client=client,
+                quantity=quantity,
+                balance=cannister.stock
+            )
+    
+    return redirect('cannister_list')
+
+
+@login_required
+def bin_card(request):
+    issued_cannisters = IssuedCannister.objects.all().order_by('-date_issued')
+
+    # Pagination
+    per_page = request.GET.get('per_page', 10)
+    paginator = Paginator(issued_cannisters, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'Inventory/cannister_bin.html', {'issued_cannisters': page_obj})
+
+@login_required
+def bin_search(request):
+    query = request.GET.get('search', '')
+    issued_cannisters = IssuedCannister.objects.filter(
+        Q(name__icontains=query) | 
+        Q(batch_no__icontains=query) |
+        Q(client__icontains=query) |
+        Q(staff_on_duty__username__icontains=query)
+    ).order_by('-date_issued')
+
+    # Pagination
+    per_page = request.GET.get('per_page', 10)
+    paginator = Paginator(issued_cannisters, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'Inventory/cannister_bin.html', {'issued_cannisters': page_obj})
+
+@login_required
+def bin_filter(request):
+    if request.method == "POST":
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        issued_cannisters = IssuedCannister.objects.all()
+        if start_date and end_date:
+            issued_cannisters = issued_cannisters.filter(date_issued__range=[start_date, end_date])
+
+        # Pagination
+        per_page = request.GET.get('per_page', 10)
+        paginator = Paginator(issued_cannisters, per_page)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        return render(request, 'Inventory/cannister_bin.html', {'issued_cannisters': page_obj})
+    
+    return redirect('bin_card')
+
+@login_required
+def return_cannister(request, issued_cannister_id):
+    issued_cannister = get_object_or_404(IssuedCannister, id=issued_cannister_id)
+    
+    if not issued_cannister.action:  # Ensure it's not already returned
+        issued_cannister.action = True
+        issued_cannister.returned_by = request.user
+        issued_cannister.save()
+
+        # Restore stock in the cannister model
+        cannister = Cannister.objects.get(batch_no=issued_cannister.batch_no)
+        cannister.stock += issued_cannister.quantity
+        cannister.save()
+
+    return redirect('bin_card')

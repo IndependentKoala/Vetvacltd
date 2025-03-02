@@ -1,0 +1,121 @@
+{% extends 'Inventory/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Navigation and Search Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{% url 'cannister_list' %}" class="text-primary font-weight-bold" style="text-decoration: none; font-size: 1.5rem;">Cannisters</a>
+        <form action="{% url 'search' %}" method="POST" class="form-inline">
+            {% csrf_token %}
+            <div class="input-group">
+                <input
+                    type="text"
+                    name="q"
+                    class="form-control form-control-sm"
+                    placeholder="Search Cannister"
+                    aria-label="Search"
+                    required
+                >
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-dark btn-sm">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Cannisters Table -->
+    <div class="card">
+        <div class="card-body">
+            <!-- Scrollable Table Wrapper for Small Screens -->
+            <div class="table-responsive">
+                <table id="cannisters-table" class="table table-striped table-sm text-right">
+                    <thead>
+                        <tr>
+                            <th class="text-left" style="background-color: #ffebcd; color: #a0522d;">Cannister</th>
+                            <th style="background-color: #e0ffff; color: #008b8b;">Batch No</th>
+                            <th style="background-color: #f5f5dc; color: #8b4513;">Stock</th>
+                            <th style="background-color: #e6e6fa; color: #6a5acd;">Litres</th>
+                            <th class="text-center" style="background-color: #fafad2; color: #b8860b;">Issued to</th>
+                            <th class="text-center" style="background-color: #ffe4e1; color: #d2691e;">Quantity</th>
+                            <th style="background-color: #dfffd8; color: #2e8b57;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cannister in cannisters %}
+                        <tr>
+                            <td class="text-left">{{ cannister.name }}</td>
+                            <td>{{ cannister.batch_no }}</td>
+                            <td>{{ cannister.stock }}</td>
+                            <td>{{ cannister.litres }}</td>
+                            <td>
+                                <form action="{% url 'issue_cannister' cannister.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input
+                                        type="text"
+                                        name="client"
+                                        class="form-control form-control-sm text-center"
+                                        placeholder="Issued to"
+                                        required
+                                    >
+                            </td>
+                            <td>
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        class="form-control form-control-sm text-center"
+                                        placeholder="Quantity"
+                                        min="1"
+                                        required
+                                    >
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-danger btn-sm">Issue</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="card-footer d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <a href="{% url 'bin_card' %}" class="btn btn-dark btn-sm mr-2">Bin Report</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-dark btn-sm mr-2">Dashboard</a>
+            </div>
+
+            <!-- Download Button Positioned at Bottom Right -->
+            <div class="ml-auto">
+                <button id="download-btn" class="btn btn-primary btn-sm">Download Table</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Download Table Data as CSV
+    document.getElementById("download-btn").addEventListener("click", function () {
+        const table = document.getElementById("cannisters-table");
+        let csvContent = "";
+
+        // Loop through each row of the table
+        for (let row of table.rows) {
+            const cells = Array.from(row.cells);
+            const rowContent = cells.map(cell => `"${cell.textContent.trim()}"`).join(",");
+            csvContent += rowContent + "\r\n";
+        }
+
+        // Create a downloadable CSV link
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.setAttribute("href", URL.createObjectURL(blob));
+        link.setAttribute("download", "Cannisters_inventory.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+</script>
+
+{% endblock %}

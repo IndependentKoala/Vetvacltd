@@ -164,47 +164,6 @@
     </div>
 </div>
 
-<!-- Modal to display Expiring Soon and Low Stock Drugs -->
-<!-- {% if show_modal %}
-<div class="modal fade" id="expiringModal" tabindex="-1" aria-labelledby="expiringModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="expiringModalLabel">Drugs Expiring Soon or Low in Stock</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h6>Expiring Soon:</h6>
-                <ul>
-                    {% for drug in expiring_soon %}
-                        <li>{{ drug.name }} - Expiry Date: {{ drug.expiry_date }}</li>
-                    {% empty %}
-                        <li>No drugs expiring soon.</li>
-                    {% endfor %}
-                </ul>
-
-                <h6>Low in Stock:</h6>
-                <ul>
-                    {% for drug in low_stock %}
-                        <li>{{ drug.name }} - Stock: {{ drug.stock }}</li>
-                    {% empty %}
-                        <li>No drugs are low in stock.</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-    // Show the modal on page load
-    var modal = new bootstrap.Modal(document.getElementById('expiringModal'));
-    modal.show();
-</script>
-{% endif %} -->
-
 <script>
     // Function to set the quantity and client to the lock form before submission
     function setLockDetails(drugId) {

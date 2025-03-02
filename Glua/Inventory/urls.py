@@ -42,6 +42,11 @@ urlpatterns = [
     path('marketing-items/create/', views.create_marketing_item, name='create_marketing_item'),
     path('picking-list/', views.picking_list_view, name='picking_list'),
     path("add_to_picking_list/<int:drug_id>/", views.add_to_picking_list, name="add_to_picking_list"),
-
+    path('cannisters/', views.cannister_list, name='cannister_list'),
+    path('cannisters/issue/<int:cannister_id>/', views.issue_cannister, name='issue_cannister'),
+    path('bin-card/', views.bin_card, name='bin_card'),
+    path('bin-card/search/', views.bin_search, name='bin_search'),
+    path('bin-card/filter/', views.bin_filter, name='bin_filter'),
+    path('bin-card/return/<int:issued_cannister_id>/', views.return_cannister, name='return_cannister'),
 ]
 

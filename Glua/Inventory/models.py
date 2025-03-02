@@ -188,3 +188,26 @@ class PickingList(models.Model):
 
     def __str__(self):
         return f"{self.date} - {self.client} - {self.product}"
+    
+class Cannister(models.Model):
+    name = models.CharField(max_length=255)
+    batch_no = models.CharField(max_length=100, unique=True)
+    stock = models.PositiveIntegerField()
+    litres = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name} - {self.batch_no}"
+    
+class IssuedCannister(models.Model):
+    date_issued = models.DateTimeField(default=now)
+    name = models.CharField(max_length=255)
+    batch_no = models.CharField(max_length=100)
+    staff_on_duty = models.ForeignKey(User, on_delete=models.CASCADE, related_name="issued_by")
+    returned_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="returned_by", null=True, blank=True)
+    client = models.CharField(max_length=255)
+    quantity = models.PositiveIntegerField()
+    balance = models.PositiveIntegerField(null=True, blank=True)
+    action = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} - {self.batch_no} issued to {self.client}"
