@@ -972,3 +972,17 @@ def return_cannister(request, issued_cannister_id):
         cannister.save()
 
     return redirect('bin_card')
+
+def search_cannister(request):
+    query = request.POST.get('q', '')  # Get search input
+    results = []
+
+    if query:
+        results = Cannister.objects.filter(
+            Q(name__icontains=query) | 
+            Q(batch_no__icontains=query) | 
+            Q(stock__icontains=query) |   # Search by stock
+            Q(litres__icontains=query)    # Search by litres
+        )
+
+    return render(request, 'Inventory/cannister.html', {'cannisters': results, 'query': query})

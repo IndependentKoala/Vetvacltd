@@ -48,5 +48,7 @@ urlpatterns = [
     path('bin-card/search/', views.bin_search, name='bin_search'),
     path('bin-card/filter/', views.bin_filter, name='bin_filter'),
     path('bin-card/return/<int:issued_cannister_id>/', views.return_cannister, name='return_cannister'),
+    path('search-cannister/', views.search_cannister, name='search_cannister'),
+
 ]
 

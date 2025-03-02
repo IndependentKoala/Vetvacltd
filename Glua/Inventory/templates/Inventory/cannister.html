@@ -5,7 +5,7 @@
     <!-- Navigation and Search Bar -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="{% url 'cannister_list' %}" class="text-primary font-weight-bold" style="text-decoration: none; font-size: 1.5rem;">Cannisters</a>
-        <form action="{% url 'search' %}" method="POST" class="form-inline">
+        <form action="{% url 'search_cannister' %}" method="POST" class="form-inline">
             {% csrf_token %}
             <div class="input-group">
                 <input
