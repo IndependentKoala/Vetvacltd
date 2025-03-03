@@ -45,8 +45,8 @@ urlpatterns = [
     path('cannisters/', views.cannister_list, name='cannister_list'),
     path('cannisters/issue/<int:cannister_id>/', views.issue_cannister, name='issue_cannister'),
     path('bin-card/', views.bin_card, name='bin_card'),
-    path('bin-card/search/', views.bin_search, name='bin_search'),
-    path('bin-card/filter/', views.bin_filter, name='bin_filter'),
+    path('bin-card/search/', views.bin_search, name='can_search'),
+    path('bin-card/filter/', views.can_filter, name='can_filter'),
     path('bin-card/return/<int:issued_cannister_id>/', views.return_cannister, name='return_cannister'),
     path('search-cannister/', views.search_cannister, name='search_cannister'),
 

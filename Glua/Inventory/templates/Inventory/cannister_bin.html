@@ -10,7 +10,7 @@
     <!-- Filters: Search and Date Range -->
     <div class="form-row mb-3">
         <!-- Search Form -->
-        <form action="{% url 'bin_search' %}" method="GET" class="form-inline col-md-7">
+        <form action="{% url 'can_search' %}" method="GET" class="form-inline col-md-7">
             <div class="input-group">
                 <input type="text" name="search" class="form-control form-control-sm" placeholder="Search" aria-label="Search">
                 <div class="input-group-append">
@@ -20,7 +20,7 @@
         </form>
         
         <!-- Date Range Filter -->
-        <form action="{% url 'bin_filter' %}" method="POST" class="form-inline col-md-5 ml-auto">
+        <form action="{% url 'can_filter' %}" method="POST" class="form-inline col-md-5 ml-auto">
             {% csrf_token %}
             <div class="form-row">
                 <div class="col"><input type="date" name="start_date" class="form-control form-control-sm"></div>

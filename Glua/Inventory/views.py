@@ -335,6 +335,7 @@ def dashboard(request):
     locked_products = LockedProduct.objects.all().count()
     marketing_items = MarketingItem.objects.all().count()
     total_picking_list = PickingList.objects.all().count()
+    cannisters = Cannister.objects.all().count()
 
     # Top Sold Products
     top_sold_products = (
@@ -361,7 +362,8 @@ def dashboard(request):
         'show_modal': show_modal,
         'locked_products': locked_products,
         'marketing_items': marketing_items,
-        'total_picking_list': total_picking_list
+        'total_picking_list': total_picking_list,
+        'cannisters':cannisters
     }
     return render(request, 'Inventory/dashboard.html', context)
 
@@ -938,7 +940,7 @@ def bin_search(request):
     return render(request, 'Inventory/cannister_bin.html', {'issued_cannisters': page_obj})
 
 @login_required
-def bin_filter(request):
+def can_filter(request):
     if request.method == "POST":
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
