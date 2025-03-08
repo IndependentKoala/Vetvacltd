@@ -310,10 +310,10 @@ def dashboard(request):
     today = timezone.now().date()
 
     # Get the expired products (expiry date is in the past)
-    expired_drugs = Drug.objects.filter(expiry_date__lt=today)
+    expired_drugs = Drug.objects.filter(expiry_date__lt=today, stock__gt=0)
 
     # Get the products expiring within the next 10 days
-    expiring_soon = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180), expiry_date__gt=today)
+    expiring_soon = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180), expiry_date__gt=today, stock__gt=0)
 
     # Get the products with stock below the reorder level
     low_stock = Drug.objects.filter(stock__lte=F('reorder_level'))
@@ -566,7 +566,7 @@ def out_of_stock(request):
 @login_required
 def expiring_soon(request):
     today = timezone.now().date()
-    expiring_products = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180))
+    expiring_products = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180), stock__gt=0).order_by('expiry_date')
     return render(request, 'Inventory/expiring_soon.html', {'expiring_soon': expiring_products})
 
 blue_shades = [
@@ -966,6 +966,7 @@ def return_cannister(request, issued_cannister_id):
     if not issued_cannister.action:  # Ensure it's not already returned
         issued_cannister.action = True
         issued_cannister.returned_by = request.user
+        issued_cannister.date_returned = timezone.now()
         issued_cannister.save()
 
         # Restore stock in the cannister model

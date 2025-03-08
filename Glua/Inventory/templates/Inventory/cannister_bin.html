@@ -36,7 +36,14 @@
         <table id="bin-card-table" class="table table-bordered table-hover">
             <thead style="background-color: #001f3f; color: white;">
                 <tr>
-                    <th>Date Issued</th>
+                    <th class="text-center">
+                        Date  
+                         <hr style="border: 1px solid white; margin: 2px 0;"> <!-- Horizontal Line -->
+                         <span style="display: flex; justify-content: space-between;">
+                             <span style="border-right: 1px solid white; flex: 1; text-align: center;">Issue Date</span>
+                             <span style="flex: 1; text-align: center;">Return Date</span>
+                         </span>
+                     </th>
                     <th>Cannister Name</th>
                     <th>Batch No</th>
                     <th class="text-center">
@@ -56,7 +63,16 @@
             <tbody>
                 {% for record in issued_cannisters %}
                 <tr>
-                    <td>{{ record.date_issued|date:"M d, Y h:i A" }}</td>
+                    <td>
+                        <span style="display: flex; justify-content: space-between;">
+                            <span style="border-right: 1px solid black; flex: 1; text-align: center;">{{ record.date_issued|date:"M d, Y"  }}</span>
+                            {% if record.action %}
+                            <span style="flex: 1; text-align: center;">{{ record.date_returned|date:"M d, Y"  }}</span>
+                            {% else %}
+                            <span style="flex: 1; text-align: center;"></span>
+                            {% endif %}
+                        </span>
+                    </td>
                     <td>{{ record.name }}</td>
                     <td>{{ record.batch_no }}</td>
                     <td style="display: flex;">
