@@ -104,23 +104,30 @@
             <button id="download-btn" class="btn btn-primary btn-sm ml-2">Download Report</button>
         </div>
 
-        <!-- Pagination Section -->
-        <div class="pagination mt-3 d-flex justify-content-center flex-wrap"> 
-            {% if sales.has_previous %}
-            <a href="?page={{ sales.previous_page_number }}&per_page={{ sales.paginator.per_page }}" class="btn btn-dark btn-sm mx-1">Previous</a>
+       <!-- Pagination Section -->
+<div class="pagination mt-3 d-flex justify-content-center flex-wrap"> 
+    {% if sales.has_previous %}
+        <a href="?page={{ sales.previous_page_number }}&per_page={{ sales.paginator.per_page }}" 
+           class="btn btn-dark btn-sm me-2">Previous</a>
+    {% endif %}
+
+    <div class="d-flex flex-wrap justify-content-center gap-2" style="max-width: 1000px;">
+        {% for page_num in sales.paginator.page_range %}
+            {% if page_num == sales.number %}
+                <span class="btn btn-primary btn-sm">{{ page_num }}</span>
+            {% else %}
+                <a href="?page={{ page_num }}&per_page={{ sales.paginator.per_page }}" 
+                   class="btn btn-outline-dark btn-sm">{{ page_num }}</a>
             {% endif %}
-            <div class="d-flex flex-wrap justify-content-center" style="max-width: 1000px;">
-            {% for page_num in sales.paginator.page_range %}
-                {% if page_num == sales.number %}
-                    <span class="btn btn-primary btn-sm mx-1">{{ page_num }}</span>
-                {% else %}
-                    <a href="?page={{ page_num }}&per_page={{ sales.paginator.per_page }}" class="btn btn-outline-dark btn-sm mx-1">{{ page_num }}</a>
-                {% endif %}
-            {% endfor %}
-            {% if sales.has_next %}
-            <a href="?page={{ sales.next_page_number }}&per_page={{ sales.paginator.per_page }}" class="btn btn-dark btn-sm mx-1">Next</a>
-            {% endif %}
-        </div>
+        {% endfor %}
+    </div>
+
+    {% if sales.has_next %}
+        <a href="?page={{ sales.next_page_number }}&per_page={{ sales.paginator.per_page }}" 
+           class="btn btn-dark btn-sm ms-2">Next</a>
+    {% endif %}
+</div>
+
     </div>
 </div>
 
