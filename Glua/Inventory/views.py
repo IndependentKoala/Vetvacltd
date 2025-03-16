@@ -317,10 +317,11 @@ def dashboard(request):
 
     # Get the products with stock below the reorder level
     low_stock = Drug.objects.filter(stock__lte=F('reorder_level'), stock__gt=0)
+    out_of_stock = Drug.objects.filter(stock=0)
 
     # Check if the modal should be shown (only when there are low stock or expiring soon products)
     show_modal = False
-    if low_stock.exists() or expiring_soon.exists():
+    if low_stock.exists() or expiring_soon.exists() or out_of_stock.exists():
         show_modal = not request.session.get('modal_shown', False)  # Only show modal if 'modal_shown' is not set or False
 
     if show_modal:
@@ -329,7 +330,7 @@ def dashboard(request):
 
     # Summary Data
     total_products = Drug.objects.count()
-    low_stock_products = Drug.objects.filter(stock__lte=F('reorder_level')).count()
+    low_stock_products = Drug.objects.filter(stock__lte=F('reorder_level'), stock__gt=0).count()
     out_of_stock_products = Drug.objects.filter(stock=0).count()
     zero_stock_products = Drug.objects.filter(stock__lte=5).count()
     locked_products = LockedProduct.objects.all().count()
@@ -363,8 +364,10 @@ def dashboard(request):
         'locked_products': locked_products,
         'marketing_items': marketing_items,
         'total_picking_list': total_picking_list,
-        'cannisters':cannisters
+        'cannisters':cannisters,
+        'out_of_stock':out_of_stock
     }
+    print("Context out_of_stock:", list(out_of_stock))
     return render(request, 'Inventory/dashboard.html', context)
 
 

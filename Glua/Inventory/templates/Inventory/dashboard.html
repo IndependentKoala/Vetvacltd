@@ -144,6 +144,7 @@
         </tbody>
     </table>
 </div>
+
 <!-- Modal to display Expiring Soon and Low Stock Drugs -->
 {% if show_modal %}
 <div class="modal fade" id="expiringModal" tabindex="-1" role="dialog" aria-labelledby="expiringModalLabel" aria-hidden="true">
@@ -173,6 +174,16 @@
                         <li>No drugs are low in stock.</li>
                     {% endfor %}
                 </ul>
+
+                <h6>Out of Stock:</h6>
+                <ul>
+                    {% for drug in out_of_stock %}
+                        <li>{{ drug.name }} - Stock: {{ drug.stock }}</li>
+                    {% empty %}
+                        <li>No drugs are out of stock.</li>
+                    {% endfor %}
+                </ul>
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
