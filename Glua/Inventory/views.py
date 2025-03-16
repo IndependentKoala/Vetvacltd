@@ -282,7 +282,7 @@ class modifyDrugUpdateView(UpdateView):
 
 def bin_report(request):
     # Get all sales ordered by date sold
-    sales = Sale.objects.all().order_by('-date_sold')
+    sales = Sale.objects.all().order_by('date_sold')
     
     # Get date range filters from the request
     start_date = request.POST.get('start_date')
@@ -316,7 +316,7 @@ def dashboard(request):
     expiring_soon = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180), expiry_date__gt=today, stock__gt=0)
 
     # Get the products with stock below the reorder level
-    low_stock = Drug.objects.filter(stock__lte=F('reorder_level'))
+    low_stock = Drug.objects.filter(stock__lte=F('reorder_level'), stock__gt=0)
 
     # Check if the modal should be shown (only when there are low stock or expiring soon products)
     show_modal = False
@@ -842,11 +842,21 @@ def picking_list_view(request):
     
     return render(request, 'Inventory/picking_list.html', {'picking_list': page_obj})
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.utils import timezone
+from .models import Drug, PickingList
+
 def add_to_picking_list(request, drug_id):
     if request.method == "POST":
         drug = get_object_or_404(Drug, id=drug_id)
         client = request.POST.get("client", "").strip()
         quantity = request.POST.get("quantity", "0").strip()
+
+        # Validate client field (ensure it's not empty)
+        if not client:
+            messages.error(request, "Client name cannot be empty.")
+            return redirect("home")
 
         # Ensure quantity is a valid integer
         if not quantity.isdigit():
@@ -871,13 +881,13 @@ def add_to_picking_list(request, drug_id):
             product=drug.name,
             batch_no=drug.batch_no,
             quantity=quantity,
-            in_stock=drug
         )
 
         messages.success(request, "Item added to the picking list.")
         return redirect("home")
 
     return HttpResponse("Invalid request", status=400)
+
 
 def cannister_list(request):
     cannisters = Cannister.objects.all()

@@ -105,15 +105,16 @@
         </div>
 
         <!-- Pagination Section -->
-        <div class="pagination mt-3 d-flex justify-content-center">
+        <div class="pagination mt-3 d-flex justify-content-center flex-wrap"> 
             {% if sales.has_previous %}
             <a href="?page={{ sales.previous_page_number }}&per_page={{ sales.paginator.per_page }}" class="btn btn-dark btn-sm mr-2">Previous</a>
             {% endif %}
+            <div class="d-flex flex-wrap justify-content-center" style="max-width: 1000px;">
             {% for page_num in sales.paginator.page_range %}
                 {% if page_num == sales.number %}
                     <span class="btn btn-primary btn-sm mr-2">{{ page_num }}</span>
                 {% else %}
-                    <a href="?page={{ page_num }}&per_page={{ sales.paginator.per_page }}" class="btn btn-outline-dark btn-sm mr-2">{{ page_num }}</a>
+                    <a href="?page={{ page_num }}&per_page={{ sales.paginator.per_page }}" class="btn btn-outline-dark btn-sm mr-2 mb-2">{{ page_num }}</a>
                 {% endif %}
             {% endfor %}
             {% if sales.has_next %}
