@@ -196,7 +196,7 @@ def binsearch(request):
             Q(client__icontains=query) |
             Q(drug_sold__icontains=query) |
             Q(batch_no__icontains=query)
-        ).order_by('-date_sold')
+        ).order_by('date_sold')
     return render(request, 'Inventory/bin.html', {'sales': bins})
 
 
@@ -293,7 +293,7 @@ def bin_report(request):
         try:
             start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
-            sales = sales.filter(date_sold__range=(start_date, end_date)).order_by('-date_sold')
+            sales = sales.filter(date_sold__range=(start_date, end_date)).order_by('date_sold')
         except ValueError:
             pass  # Ignore invalid dates
 
@@ -614,16 +614,16 @@ def bin_filter(request):
 
         # Filter the sales by date range
         if start_date and end_date:
-            sales = Sale.objects.filter(date_sold__range=[start_date, end_date]).order_by('-date_sold')
+            sales = Sale.objects.filter(date_sold__range=[start_date, end_date]).order_by('date_sold')
         elif start_date:
-            sales = Sale.objects.filter(date_sold__gte=start_date).order_by('-date_sold')
+            sales = Sale.objects.filter(date_sold__gte=start_date).order_by('date_sold')
         elif end_date:
-            sales = Sale.objects.filter(date_sold__lte=end_date).order_by('-date_sold')
+            sales = Sale.objects.filter(date_sold__lte=end_date).order_by('date_sold')
         else:
-            sales = Sale.objects.all().order_by('-date_sold')  # Default to all if no dates provided
+            sales = Sale.objects.all().order_by('date_sold')  # Default to all if no dates provided
 
     else:
-        sales = Sale.objects.all().order_by('-date_sold')  # Default to all sales if not a POST request
+        sales = Sale.objects.all().order_by('date_sold')  # Default to all sales if not a POST request
 
     return render(request, 'Inventory/bin.html', {'sales': sales})
 
