@@ -282,7 +282,7 @@ class modifyDrugUpdateView(UpdateView):
 
 def bin_report(request):
     # Get all sales ordered by date sold
-    sales = Sale.objects.all().order_by('date_sold')
+    sales = Sale.objects.all().order_by('-date_sold')
     
     # Get date range filters from the request
     start_date = request.POST.get('start_date')
@@ -826,8 +826,7 @@ def picking_list_view(request):
             Q(product__icontains=query) |
             Q(batch_no__icontains=query) |
             Q(quantity__icontains=query) |
-            Q(date__icontains=query) |  # Convert date to string for searching
-            Q(in_stock__stock__icontains=query)  # Assuming `in_stock` is related to Drug
+            Q(date__icontains=query) 
         ).order_by('-date')
     
     # Filtering by date range
@@ -845,10 +844,7 @@ def picking_list_view(request):
     
     return render(request, 'Inventory/picking_list.html', {'picking_list': page_obj})
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.utils import timezone
-from .models import Drug, PickingList
+
 
 def add_to_picking_list(request, drug_id):
     if request.method == "POST":
