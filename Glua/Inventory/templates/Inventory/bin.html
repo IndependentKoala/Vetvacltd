@@ -108,16 +108,16 @@
 <div class="pagination mt-3 d-flex justify-content-center flex-wrap align-items-start"> 
     {% if sales.has_previous %}
         <a href="?page={{ sales.previous_page_number }}&per_page={{ sales.paginator.per_page }}" 
-           class="btn btn-dark btn-sm me-3">Previous</a> <span class="mr-1"></span><!-- Space after Previous -->
+           class="btn btn-dark btn-sm me-3 mb-1">Previous</a> <span class="mr-1"></span><!-- Space after Previous -->
     {% endif %}
 
     <div class="d-flex flex-wrap justify-content-center gap-3" style="max-width: 1000px;">
         {% for page_num in sales.paginator.page_range %}
             {% if page_num == sales.number %}
-                <span class="btn btn-primary btn-sm mr-1">{{ page_num }}</span>
+                <span class="btn btn-primary btn-sm mr-1 mb-1">{{ page_num }}</span>
             {% else %}
                 <a href="?page={{ page_num }}&per_page={{ sales.paginator.per_page }}" 
-                   class="btn btn-outline-dark btn-sm mr-1">{{ page_num }}</a>
+                   class="btn btn-outline-dark btn-sm mr-1 mb-1">{{ page_num }}</a>
             {% endif %}
         {% endfor %}
     </div>
