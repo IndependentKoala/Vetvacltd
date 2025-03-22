@@ -70,8 +70,8 @@
                             <span class="badge badge-secondary" style="background-color: #6c757d; color: white;">Offline</span>
                             {% endif %}
                         </td>
-                        <td>{{ user.login_time|default:"N/A" }}</td>
-                        <td>{{ user.logout_time|default:"N/A" }}</td>
+                        <td>{{ user.login_time|default:"---" }}</td>
+                        <td>{{ user.logout_time|default:"---" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
