@@ -153,8 +153,8 @@
             {% endif %}
         {% endfor %}
 
-        {% if sales.number < sales.paginator.num_pages|add:-2 %}
-            {% if sales.number < sales.paginator.num_pages|add:-3 %}
+        {% if sales.number < sales.paginator.num_pages|add:-5 %}
+            {% if sales.number < sales.paginator.num_pages|add:-5 %}
                 <span class="btn btn-sm disabled">...</span>
             {% endif %}
             <a href="?page={{ sales.paginator.num_pages }}&per_page={{ sales.paginator.per_page }}" 
@@ -164,7 +164,7 @@
 
     {% if sales.has_next %}
         <a href="?page={{ sales.next_page_number }}&per_page={{ sales.paginator.per_page }}" 
-           class="btn btn-dark btn-sm ms-3 mb-1">Next</a>
+           class="btn btn-dark btn-sm ms-3 mb-1 ml-1">Next</a>
     {% endif %}
 </div>
 
