@@ -131,24 +131,24 @@
 <div class="pagination mt-3 d-flex justify-content-center flex-wrap align-items-start">
     {% if sales.has_previous %}
         <a href="?page={{ sales.previous_page_number }}&per_page={{ sales.paginator.per_page }}" 
-           class="btn btn-dark btn-sm me-3 mb-1">Previous</a>
+           class="btn btn-dark btn-sm me-3 mb-1">Previous</a><span class="mr-1"></span>
     {% endif %}
 
     <div class="d-flex flex-wrap justify-content-center gap-2">
         {% if sales.number > 3 %}
             <a href="?page=1&per_page={{ sales.paginator.per_page }}" class="btn btn-outline-dark btn-sm">1</a>
             {% if sales.number > 4 %}
-                <span class="btn btn-sm disabled">...</span>
+                <span class="btn btn-sm disabled bold">...</span>
             {% endif %}
         {% endif %}
 
         {% for page_num in sales.paginator.page_range %}
             {% if page_num >= sales.number|add:-2 and page_num <= sales.number|add:2 %}
                 {% if page_num == sales.number %}
-                    <span class="btn btn-primary btn-sm">{{ page_num }}</span>
+                    <span class="btn btn-primary btn-sm mr-1">{{ page_num }}</span>
                 {% else %}
                     <a href="?page={{ page_num }}&per_page={{ sales.paginator.per_page }}" 
-                       class="btn btn-outline-dark btn-sm">{{ page_num }}</a>
+                       class="btn btn-outline-dark btn-sm mr-1">{{ page_num }}</a>
                 {% endif %}
             {% endif %}
         {% endfor %}
