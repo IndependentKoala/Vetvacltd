@@ -313,7 +313,7 @@ def dashboard(request):
     expired_drugs = Drug.objects.filter(expiry_date__lt=today, stock__gt=0)
 
     # Get the products expiring within the next 10 days
-    expiring_soon = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180), expiry_date__gt=today, stock__gt=0).order_by('-expiry_date')
+    expiring_soon = Drug.objects.filter(expiry_date__lte=today + timedelta(days=180), expiry_date__gt=today, stock__gt=0).order_by('expiry_date')
 
     # Get the products with stock below the reorder level
     low_stock = Drug.objects.filter(stock__lte=F('reorder_level'), stock__gt=0)
