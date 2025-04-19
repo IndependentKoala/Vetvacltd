@@ -1,3 +1,4 @@
+import csv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum, F, Q
@@ -342,7 +343,7 @@ def dashboard(request):
     top_sold_products = (
         Sale.objects.values("drug_sold")
         .annotate(total_quantity=Sum("quantity"))
-        .order_by("-total_quantity")[:5]
+        .order_by("-total_quantity")[:210000]
     )
 
     # Calculate the total count of expired and expiring soon drugs
@@ -998,3 +999,24 @@ def search_cannister(request):
         )
 
     return render(request, 'Inventory/cannister.html', {'cannisters': results, 'query': query})
+@login_required
+def download_top_sold(request):
+    # Aggregate total quantity sold for each product
+    top_sold_products = (
+        Sale.objects.values('drug_sold')
+        .annotate(total_quantity=Sum('quantity'))
+        .order_by('-total_quantity')
+    )
+
+    # Create the HttpResponse object with CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="top_sold_products.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Product Name', 'Total Quantity Sold'])
+
+    for product in top_sold_products:
+        writer.writerow([product['drug_sold'], product['total_quantity']])
+
+    return response
+

@@ -41,7 +41,6 @@
                     <i class="fa fa-prescription-bottle-alt fa-3x mb-2"></i>
                     <h4>Cannisters</h4>
                     <h3>{{ cannisters }}</h3>
-
                 </div>
             </div>
         </div>
@@ -74,7 +73,7 @@
                 </div>
             </div>
         </div>
-            <!-- Marketing Items Card -->
+        <!-- Marketing Items Card -->
         <div class="col-md-3">
             <div class="card bg-light text-dark" onclick="window.location.href='{% url 'marketing_items' %}'" style="cursor: pointer;">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
@@ -90,16 +89,13 @@
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
                     <i class="fa fa-list fa-3x mb-2"></i>
                     <h4>Picking List</h4>
-                    <!-- <h3>{{ total_picking_list }}</h3> -->
                 </div>
             </div>
         </div>
     </div>
 
     {% if user.is_superuser %}
-    <!-- New Small Cards (Visible only to superusers) -->
     <div class="row text-center mb-4">
-        <!-- + New Card -->
         <div class="col-md-3" onclick="window.location.href='{% url 'create' %}'">
             <div class="card bg-info text-white small-card" style="cursor: pointer;">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
@@ -107,7 +103,6 @@
                 </div>
             </div>
         </div>
-        <!-- Users Card -->
         <div class="col-md-3">
             <div class="card bg-secondary text-white small-card" style="cursor: pointer;" onclick="window.location.href='{% url 'user_management' %}'">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
@@ -140,12 +135,17 @@
                 <td class="quantity-sold">{{ product.total_quantity }}</td>
             </tr>
             {% endfor %}
-            
         </tbody>
     </table>
+    <div class="d-flex justify-content-end mt-3">
+       
+        <a href="{% url 'download_top_sold' %}" class="btn download-btn" style="color: navy;">
+            <i class="fa fa-download mr-1"></i> Download
+        </a>
+    </div>
 </div>
 
-<!-- Modal to display Expiring Soon and Low Stock Drugs -->
+
 {% if show_modal %}
 <div class="modal fade" id="expiringModal" tabindex="-1" role="dialog" aria-labelledby="expiringModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -183,7 +183,6 @@
                         <li>No drugs are out of stock.</li>
                     {% endfor %}
                 </ul>
-                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -193,16 +192,13 @@
 </div>
 
 <script>
-    // Show the modal after the DOM has fully loaded
     $(document).ready(function() {
         $('#expiringModal').modal('show');
     });
 </script>
 {% endif %}
 
-
 <style>
-    /* Existing styles */
     .card {
         height: 180px;
         display: flex;
@@ -233,9 +229,8 @@
         margin-bottom: 20px;
     }
 
-    /* Styles for small cards */
     .small-card {
-        height: 45px; /* Smaller height for smaller cards */
+        height: 45px;
         font-size: 12px;
         padding: 5px;
     }
@@ -251,14 +246,13 @@
     }
 
     .bg-info {
-        background-color: #17a2b8 !important; /* Blue for "+ New" */
+        background-color: #17a2b8 !important;
     }
 
     .bg-secondary {
-        background-color: #6c757d !important; /* Grey for "Users" and Locked Products */
+        background-color: #6c757d !important;
     }
 
-    /* Table styles */
     .table thead {
         background-color: navy;
         color: white;
@@ -290,6 +284,10 @@
 
     .table tbody tr:hover {
         background-color: #e0e0e0;
+    }
+
+    .download-btn {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 </style>
 {% endblock %}

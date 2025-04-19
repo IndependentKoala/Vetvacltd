@@ -49,6 +49,7 @@ urlpatterns = [
     path('bin-card/filter/', views.can_filter, name='can_filter'),
     path('bin-card/return/<int:issued_cannister_id>/', views.return_cannister, name='return_cannister'),
     path('search-cannister/', views.search_cannister, name='search_cannister'),
+    path('download/top-sold/', views.download_top_sold, name='download_top_sold'),
 
 ]
 
