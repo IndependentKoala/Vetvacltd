@@ -19,9 +19,9 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-admin.site.site_header = "Status Vaccines Administration"
-admin.site.site_title = "Status Vaccines Admin"
-admin.site.index_title = "Welcome to Status Vaccines"
+admin.site.site_header = "Vetvac Services Administration"
+admin.site.site_title = "Vetvac Services Admin"
+admin.site.index_title = "Welcome to Vetvac Services"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Inventory.urls')),
