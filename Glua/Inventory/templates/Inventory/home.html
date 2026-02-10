@@ -269,44 +269,319 @@
         padding: 6px 12px !important;
     }
 
+    @media (max-width: 992px) {
+        #drugs-table thead th:nth-child(2),
+        #drugs-table tbody td:nth-child(2) {
+            display: none;
+        }
+
+        #drugs-table thead th:nth-child(5),
+        #drugs-table tbody td:nth-child(5) {
+            display: none;
+        }
+
+        #drugs-table thead th:nth-child(6),
+        #drugs-table tbody td:nth-child(6) {
+            display: none;
+        }
+
+        .header-title {
+            font-size: 22px;
+        }
+    }
+
     @media (max-width: 768px) {
         .home-page-header {
             flex-direction: column;
             align-items: flex-start;
+            padding: 20px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            width: 100%;
         }
 
         .search-form .input-group {
             max-width: 100%;
+            width: 100%;
+        }
+
+        .search-form .form-control {
+            font-size: 14px;
+        }
+
+        .search-form .btn {
+            font-size: 14px;
+        }
+
+        .table-section {
+            border-radius: 8px;
+        }
+
+        .table-header {
+            padding: 15px;
+        }
+
+        .table-header h5 {
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+
+        .table-responsive {
+            font-size: 12px;
+        }
+
+        #drugs-table {
+            table-layout: auto;
+        }
+
+        #drugs-table thead th {
+            padding: 8px 4px;
+            font-size: 11px;
+        }
+
+        #drugs-table thead th:nth-child(1) {
+            width: 20%;
+            min-width: 80px;
+        }
+
+        #drugs-table thead th:nth-child(2) {
+            display: none;
+        }
+
+        #drugs-table thead th:nth-child(3) {
+            width: 12%;
+        }
+
+        #drugs-table thead th:nth-child(4) {
+            width: 15%;
+        }
+
+        #drugs-table thead th:nth-child(5) {
+            display: none;
+        }
+
+        #drugs-table thead th:nth-child(6) {
+            display: none;
+        }
+
+        #drugs-table thead th:nth-child(7) {
+            width: 20%;
+            min-width: 90px;
+        }
+
+        #drugs-table thead th:nth-child(8) {
+            width: 12%;
+        }
+
+        #drugs-table thead th:nth-child(9) {
+            width: 21%;
+            min-width: 120px;
+        }
+
+        #drugs-table tbody td {
+            padding: 6px 4px;
+            font-size: 11px;
+        }
+
+        #drugs-table tbody td:nth-child(2),
+        #drugs-table tbody td:nth-child(5),
+        #drugs-table tbody td:nth-child(6) {
+            display: none;
+        }
+
+        .form-control-sm {
+            padding: 4px 6px;
+            font-size: 11px;
+            height: 32px;
+        }
+
+        .client-select {
+            height: 32px !important;
+            padding: 4px 6px !important;
+            font-size: 11px;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+            gap: 4px;
+            min-height: auto;
+        }
+
+        .action-buttons form:nth-child(1) .btn-action {
+            grid-column: auto;
+        }
+
+        .action-buttons form:nth-child(2) .btn-action {
+            grid-column: auto;
+        }
+
+        .action-buttons form:nth-child(3) .btn-action {
+            grid-column: auto;
+        }
+
+        .btn-action {
+            padding: 6px 8px;
+            font-size: 10px;
+            height: 32px;
+            width: 100%;
+        }
+
+        .btn-action i {
+            display: none;
         }
 
         .table-footer {
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
+            padding: 15px;
         }
 
         .footer-buttons-group {
             flex-direction: column;
+            gap: 8px;
         }
 
         .footer-buttons-group .btn {
             width: 100%;
+            padding: 8px 12px;
+            font-size: 12px;
         }
 
-        .action-buttons {
-            flex-direction: column;
-        }
-
-        .btn-action {
-            width: 100%;
+        .footer-buttons-group .btn i {
+            margin-right: 4px;
         }
 
         .pagination-wrapper {
             flex-direction: column;
             align-items: stretch;
+            gap: 10px;
+        }
+
+        .show-entries {
+            width: 100%;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .show-entries select {
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 12px;
         }
 
         .btn.pagination-btn {
             flex: 1;
+            padding: 8px 6px;
+            font-size: 12px;
+        }
+
+        #download-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .container-fluid {
+            padding: 0 15px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .home-page-header {
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .header-title {
+            font-size: 18px;
+        }
+
+        .search-form .input-group {
+            width: 100%;
+        }
+
+        .table-responsive {
+            font-size: 11px;
+        }
+
+        #drugs-table thead th {
+            padding: 6px 2px;
+            font-size: 10px;
+        }
+
+        #drugs-table thead th:nth-child(1) {
+            width: 25%;
+        }
+
+        #drugs-table thead th:nth-child(3) {
+            width: 10%;
+        }
+
+        #drugs-table thead th:nth-child(4) {
+            width: 12%;
+        }
+
+        #drugs-table thead th:nth-child(7) {
+            width: 20%;
+        }
+
+        #drugs-table thead th:nth-child(8) {
+            width: 10%;
+        }
+
+        #drugs-table thead th:nth-child(9) {
+            width: 23%;
+        }
+
+        #drugs-table tbody td {
+            padding: 4px 2px;
+            font-size: 10px;
+            word-break: break-word;
+        }
+
+        .form-control-sm,
+        .client-select {
+            padding: 3px 4px;
+            font-size: 10px;
+            height: 28px;
+        }
+
+        .btn-action {
+            padding: 4px 4px;
+            font-size: 9px;
+            height: 28px;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 3px 5px;
+        }
+
+        .container-fluid {
+            padding: 0 10px !important;
+        }
+
+        .table-footer {
+            padding: 12px;
+        }
+
+        .footer-buttons-group .btn {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+
+        .show-entries {
+            flex-direction: column;
+        }
+
+        .show-entries label {
+            margin-bottom: 5px;
+        }
+
+        .show-entries select {
+            width: 100%;
         }
     }
 </style>

@@ -247,7 +247,12 @@
             .main-content {
                 margin-left: 0;
                 margin-top: 70px;
-                padding: 15px;
+                padding: 12px;
+                min-height: calc(100vh - 70px);
+            }
+
+            body {
+                flex-direction: column;
             }
 
             /* Navbar styles for smaller screens */
@@ -256,12 +261,24 @@
                 background: linear-gradient(135deg, #0d1b2a 0%, #1a2f4a 100%);
                 border-bottom: 2px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                padding: 10px 15px;
+                position: fixed;
+                top: 0;
+                width: 100%;
+                z-index: 1030;
+                height: 70px;
+            }
+
+            .navbar-brand {
+                font-size: 18px !important;
+                font-weight: 600 !important;
             }
     
             .navbar .navbar-brand,
             .navbar .nav-link {
                 color: white !important;
                 font-weight: 500;
+                font-size: 14px;
             }
     
             .navbar .nav-link:hover {
@@ -273,8 +290,9 @@
             .navbar-toggler {
                 border: 2px solid white;
                 border-radius: 6px;
-                padding: 6px 10px;
+                padding: 6px 8px;
                 outline: none;
+                margin-left: auto;
             }
 
             .navbar-toggler-icon {
@@ -287,14 +305,31 @@
             }
 
             .navbar-collapse {
-                background: rgba(13, 27, 42, 0.95);
+                background: rgba(13, 27, 42, 0.98);
                 margin-top: 10px;
                 border-radius: 8px;
                 padding: 10px 0;
+                position: absolute;
+                top: 65px;
+                left: 0;
+                right: 0;
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+                margin: 10px;
+                width: calc(100% - 20px);
             }
 
             .navbar-nav {
                 flex-direction: column;
+            }
+
+            .navbar-text {
+                display: block;
+                padding: 10px 20px;
+                color: white;
+                font-weight: 500;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                width: 100%;
             }
 
             .nav-item {
@@ -304,6 +339,9 @@
             .nav-link {
                 padding: 10px 20px !important;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
 
             .nav-link:last-child {
@@ -329,6 +367,56 @@
 
             .table td {
                 padding: 10px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .main-content {
+                margin-top: 70px;
+                padding: 10px;
+                min-height: calc(100vh - 70px);
+            }
+
+            .navbar {
+                height: 65px;
+                padding: 8px 12px;
+            }
+
+            .navbar-brand {
+                font-size: 16px !important;
+            }
+
+            .navbar-collapse {
+                top: 62px;
+                margin: 8px;
+                width: calc(100% - 16px);
+            }
+
+            .navbar .nav-link,
+            .navbar .navbar-brand {
+                font-size: 13px !important;
+            }
+
+            .nav-link {
+                padding: 8px 15px !important;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .table {
+                font-size: 12px;
+            }
+
+            .table thead th {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .table td {
+                padding: 8px;
             }
         }
     
